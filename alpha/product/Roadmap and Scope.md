@@ -15,7 +15,7 @@ The concrete execution sequence is in `../delivery/Prototype_Scope_and_Acceptanc
 
 - Maintain one canonical product vision, architecture, decision register, release specification, and delivery checklist.
 - Prove the selected Tauri 2, Rust-host, Bundled-Python-service, and private-IPC boundary with a packaged Mac spike.
-- Pin the selected Python/FastAPI and React/Vite generated-App profile through one clean Build, preview, Run, restart, and cleanup cycle.
+- Pin the selected Python (SDK Entrypoints, hosted by the platform App runtime) and React/Vite generated-App profile through one clean Build, preview, Run, restart, and cleanup cycle.
 - Preserve the DeepSeek Harness and OpenCode adapter boundary; run bounded real-generation/repair and local-containment feasibility spikes early. Full integrated qualification still follows a working lifecycle.
 - Define local scheduler semantics and the platform BrowserProvider contract. Implement the accepted policy: show missed jobs for user-initiated retriggering without automatic catch-up, and keep automation running after window close.
 - Isolate Mac-native services behind interfaces and establish shared Core/contract Windows CI.

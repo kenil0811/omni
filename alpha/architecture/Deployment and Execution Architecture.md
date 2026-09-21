@@ -102,7 +102,7 @@ Use a SQLite control ledger, separately owned per-App SQLite Resource stores, an
 
 ### Managed toolchains
 
-The supported profile uses Python 3.13, FastAPI, Pydantic 2, Uvicorn, `uv`, and `uv.lock`; optional generated interfaces use React, TypeScript, Vite, a qualified Node.js LTS, pnpm, and `pnpm-lock.yaml`. External test packages include or install these architecture-specific runtimes through a signed, hash-verified product flow. Users do not install developer tools.
+The supported profile uses Python 3.13 SDK-declared Entrypoints with `uv` and `uv.lock`, hosted by the platform App runtime (FastAPI, Pydantic 2, Uvicorn); optional generated interfaces use React, TypeScript, Vite, a qualified Node.js LTS, pnpm, and `pnpm-lock.yaml`. External test packages include or install these architecture-specific runtimes through a signed, hash-verified product flow. Users do not install developer tools.
 
 The initial Task model loop may use Pydantic AI core behind a platform-owned provider and tool interface. The first Builder candidate is DeepSeek Harness behind `BuilderHarness`; OpenCode is the mandatory second-adapter benchmark and fallback. Neither framework owns Task, Build, Version, Release, Run, approval, or persistence truth.
 

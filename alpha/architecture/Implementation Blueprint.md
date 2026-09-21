@@ -22,7 +22,7 @@ The following are the accepted implementation baseline for the first usable loca
 - platform interfaces for native services with a Mac implementation first and shared Windows CI;
 - a platform-owned bounded Task Runner inside the trusted Python service, with non-trivial file parsing delegated to a disposable registered helper;
 - a SQLite control ledger, per-App SQLite Resource stores, a content-addressed Artifact store, and Keychain secrets;
-- one Python/FastAPI generated-App profile with an optional React/Vite interface;
+- one Python generated-App profile (SDK-declared Entrypoint functions hosted by the platform App runtime) with an optional React/Vite interface;
 - contract-first boundaries, explicit Releases, evidence, cancellation, recovery, and rollback;
 - the module, dependency, configuration, test, and release rules below.
 
@@ -513,7 +513,7 @@ One supervised App runtime process serves one exact active local Release revisio
 
 Cancellation is cooperative first. After the deadline, the Host terminates the entire App process group, the Run is reconciled, and the Release process is restarted cleanly if still active. A crash never changes the active Version or Resource data automatically.
 
-Uvicorn and FastAPI remain inside this private runtime. No generated backend port is exposed to the browser or LAN.
+Uvicorn and FastAPI belong to this platform-owned runtime, not to generated packages: a generated App declares Entrypoint functions through the SDK and contains no web framework, server, or port. No generated backend port is exposed to the browser or LAN.
 
 ## Browser runtime and local scheduler
 

@@ -53,7 +53,7 @@ This is the single status source for product and implementation work. Every item
 - [x] Retain the earlier 85-file review as dated evidence; apply the subsequent founder-approved scheduling/browser/extensibility/Windows revision and record its separate validation in `Reconciliation Report.md`.
 - [x] Select Tauri 2 with React, TypeScript, and Vite for the Mac shell.
 - [x] Define the trusted local boundary: narrow Rust native host, bundled Python platform service, and private mediated IPC.
-- [x] Select the first generated-App profile: Python 3.13/FastAPI/Pydantic/Uvicorn with `uv`, plus optional React/TypeScript/Vite static UI built with Node.js LTS and pnpm.
+- [x] Select the first generated-App profile: Python 3.13 SDK-declared Entrypoints with `uv` (FastAPI/Pydantic/Uvicorn in the platform App runtime, revised 21 Sep 2026), plus optional React/TypeScript/Vite static UI built with Node.js LTS and pnpm.
 - [x] Define the initial local workspace, separate Builder/App process groups, managed toolchains, and same-user trust limitation.
 - [x] Select DeepSeek Harness as the first Builder candidate and OpenCode as the required benchmark adapter and fallback.
 - [x] Select SQLite control and per-App Resource stores, a content-addressed Artifact area, and Keychain-backed secrets for the local profile.

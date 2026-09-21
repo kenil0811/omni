@@ -73,7 +73,7 @@ The profile rejects schedules, browser or desktop control, ambient filesystem re
 
 The prototype supports one runtime-profile family:
 
-- backend: Python 3.13, FastAPI, Pydantic 2, and Uvicorn;
+- backend: Python 3.13 Entrypoint functions declared through the App SDK; the generated package contains no web framework or server. The platform `app-runtime` worker hosts them (FastAPI, Pydantic 2, Uvicorn) and owns transport, ports, and server lifecycle;
 - Python dependency management: `uv` with committed `uv.lock`;
 - optional custom interface: React, TypeScript, and Vite compiled to static assets;
 - frontend dependency management: qualified Node.js LTS and pnpm with committed `pnpm-lock.yaml`;

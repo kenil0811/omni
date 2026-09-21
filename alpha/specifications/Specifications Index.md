@@ -41,7 +41,7 @@ Read `Current Release Specification.md` before implementing individual contracts
 - local Task execution from typed text and deliberately selected files through a fixed platform profile, with non-trivial parsing isolated in a registered resource-bounded helper;
 - Task revisions, Attempts, output Artifacts, evidence, retry, and promotion lineage;
 - local deployment;
-- real generated code in the selected Python 3.13/FastAPI plus optional React/Vite managed runtime profile;
+- real generated code in the selected Python 3.13 SDK-Entrypoint plus optional React/Vite managed runtime profile;
 - manual Runs and locally scheduled Jobs;
 - general Playwright/Chromium browser operations, protected authenticated profiles, takeover and recovery;
 - minimal App-scoped table CRUD/filter/cursor and Artifact-backed file Resources;
