@@ -1,0 +1,147 @@
+{
+  "duration_api_ms": 73946,
+  "stop_reason": "end_turn",
+  "session_id": "fbe470a1-0aeb-4b4e-a6ed-0d8bbe0532ea",
+  "total_cost_usd": 0.7251759999999999,
+  "usage": {
+    "input_tokens": 28,
+    "cache_creation_input_tokens": 28399,
+    "cache_read_input_tokens": 428648,
+    "output_tokens": 8994,
+    "output_tokens_details": {
+      "thinking_tokens": 619
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 28399,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 882,
+        "cache_read_input_tokens": 41677,
+        "cache_creation_input_tokens": 194,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 194
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1802,
+      "outputTokens": 14,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001872,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 28,
+      "outputTokens": 8994,
+      "cacheReadInputTokens": 428648,
+      "cacheCreationInputTokens": 28399,
+      "webSearchRequests": 0,
+      "costUSD": 0.7233039999999998,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 619,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01FayVdMrYis5wNTUpeLgAa8",
+      "tool_input": {
+        "command": "uv run pytest tests/ 2>&1 | tail -15; ls -la; env | grep -i -E 'python|uv_|app_sdk'",
+        "description": "Run scaffold tests and check env"
+      }
+    },
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_0132FAQ6fbmShTeiMaAxQUuN",
+      "tool_input": {
+        "command": "uv run pytest tests/ -q -p no:cacheprovider --co 2>/dev/null | head -1; uv run python -m pytest --version 2>&1 | tail -1; uv run which pytest",
+        "description": "Locate pytest used by uv"
+      }
+    },
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01NmidCMz7NER4mX4TmWaCau",
+      "tool_input": {
+        "command": "printf 'import app_sdk, inspect\\ndef test_x():\\n    print(\"SDKPATH\", app_sdk.__file__, [n for n in dir(app_sdk) if not n.startswith(\"_\")])\\n' > /tmp/probe_test.py && uv run pytest /tmp/probe_test.py -s -q --rootdir=. 2>&1 | grep SDKPATH",
+        "description": "Probe app_sdk location via pytest"
+      }
+    },
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01CGNxvjyhy1qrC8vELEnyqr",
+      "tool_input": {
+        "command": "cat /Users/kenil/Desktop/dev/omni/app/packages/app-sdk-python/src/app_sdk/__init__.py",
+        "description": "Read SDK exports"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 17,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "I've built the Work Tracker App, and `uv run pytest tests/` passes (36 tests).\n\n**What changed**\n- **`src/handlers.py`**: replaced the placeholder with the four entrypoints, using the brief's ids and input/output keys exactly:\n  - **`create_item`**: fills in the defaults (status `todo`, priority `3`, notes `\"\"`) and returns `{\"id\", \"revision\"}`, with revision starting at 1.\n  - **`update_item`**: checks `changes` by the same rules as creation, then updates with the caller's revision. If that revision is out of date, the SDK's `RevisionConflict` is raised and passed through untouched, so the earlier edit is kept.\n  - **`list_items`**: filters by status if one is given and returns `{\"items\", \"total\"}`, sorted by priority (1 first), then title.\n  - **`summarize`**: returns `{\"total\", \"by_status\"}`, always with all three statuses, using 0 where none exist.\n  - Bad input raises `InvalidInput` with a plain-language message. That covers an empty title, an unknown status, a priority outside 1\u20135 or not a whole number (`true`, `\"2\"` and `2.5` are all rejected), notes that aren't text, and any unrecognised field.\n- **`app.yaml`**: new metadata (`work-tracker`), all four entrypoints with their handlers, and the `items` table.\n- **`tests/test_app.py`**: 36 tests using the real harness. They cover the defaults, every rejection case, the revision bump on update, the stale-revision conflict (checking the first edit survives), the list ordering and status filter, and the summary counts.\n- **`pyproject.toml`**: renamed the project from `example-app` to `work-tracker` to match. This is the only change the brief didn't ask for.\n\n**Choices the brief didn't cover**\n- Updating an item id that doesn't exist raises `InvalidInput` (\"No item with id \u2026\") rather than the SDK's own not-found error.\n- An empty `changes` object is rejected as `InvalidInput`.\n- Unknown keys in the top-level input are rejected too, not just unknown item fields.\n\nSay if the caller expects different behaviour for any of these.\n\nNothing is blocked, and no dependencies were added.\n\nSeparately, some claude.ai connectors in this session (Google Drive, Booking.com, FactSet and others) need authorising in your claude.ai connector settings before they can be used. This task didn't need any of them.",
+  "ttft_ms": 2208,
+  "type": "result",
+  "duration_ms": 74691,
+  "uuid": "bdf4064a-e26e-44d2-9cc7-f9ab76bcc641",
+  "ttft_stream_ms": 919,
+  "time_to_request_ms": 39,
+  "first_content_frame_ms": 919,
+  "queued_turn_count": 0,
+  "result_index": 0,
+  "_exit_code": 0,
+  "_stderr": "",
+  "_wall_seconds": 77.6
+}

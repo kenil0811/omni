@@ -1,0 +1,32 @@
+apiVersion: alpha.platform/v0.1
+kind: AppManifest
+
+metadata:
+  name: source-watch
+  displayName: Source Watch
+  description: Collect a product listing feed, keep one record per item, and flag expensive items.
+
+spec:
+  compatibility:
+    sdk: ">=0.0.1 <0.1"
+
+  entrypoints:
+    - id: collect
+      kind: job
+      handler: handlers.collect
+      description: Fetch the listing feed and store one record per item.
+
+    - id: list_records
+      kind: query
+      handler: handlers.list_records
+      description: List stored records, optionally only flagged ones.
+
+  resources:
+    - id: records
+      kind: table
+
+  tests:
+    - id: unit
+      kind: unit
+      requiredFor: [build]
+      command: pytest tests/

@@ -1,0 +1,5 @@
+order_id,customer,amount,status
+B-1,Haddad LLC,210.00,paid
+B-2,Novak spol,,paid
+B-3,Andersson AB,64.00,shipped
+B-4,Moreau SAS,18.75,new

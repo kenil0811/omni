@@ -1,0 +1,139 @@
+{
+  "duration_api_ms": 58999,
+  "stop_reason": "end_turn",
+  "session_id": "04dff2ae-e093-4ef5-9e3e-2d431d1d2e6b",
+  "total_cost_usd": 0.5056665,
+  "usage": {
+    "input_tokens": 16,
+    "cache_creation_input_tokens": 21069,
+    "cache_read_input_tokens": 212139,
+    "output_tokens": 7478,
+    "output_tokens_details": {
+      "thinking_tokens": 526
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 21069,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 1194,
+        "cache_read_input_tokens": 34134,
+        "cache_creation_input_tokens": 407,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 407
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1802,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001877,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 16,
+      "outputTokens": 7478,
+      "cacheReadInputTokens": 212139,
+      "cacheCreationInputTokens": 21069,
+      "webSearchRequests": 0,
+      "costUSD": 0.5037895,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 526,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_0147tkq6ZKVZYKhE6tihoqm2",
+      "tool_input": {
+        "command": "cat pyproject.toml && uv run python -c \"import app_sdk,inspect;print(app_sdk.__file__);print(dir(app_sdk))\" && d=$(uv run python -c \"import app_sdk,os;print(os.path.dirname(app_sdk.__file__))\") && ls -R $d | head -30 && grep -n \"def insert\\|def update\\|RevisionConflict\\|uuid\\|def list\\|def invoke\" -r $d | head -30",
+        "description": "Inspect app_sdk package for insert/update semantics"
+      }
+    },
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01Kts3yGNnqzMEqNwhiMWphM",
+      "tool_input": {
+        "command": "echo \"$VIRTUAL_ENV\" && uv run --active python -c \"import app_sdk;print(app_sdk.__file__);print(dir(app_sdk))\"",
+        "description": "Check app_sdk in active virtualenv"
+      }
+    },
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_011dcAk1KQpoQCAwbAKPLRxv",
+      "tool_input": {
+        "command": "uv run --active python -c \"import app_sdk;print(app_sdk.__file__);print(dir(app_sdk))\"",
+        "description": "Check app_sdk in active virtualenv"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 10,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "I built the Work Tracker App and its tests pass: `uv run pytest tests/` gave **29 passed in 0.14s**.\n\n**What changed**\n- **`src/handlers.py`** now has the four entrypoints and no longer has the `example` placeholder:\n  - `create_item` (action) fills in the defaults: status `todo`, priority `3`, notes `\"\"`. It returns `{\"id\", \"revision\": 1}`.\n  - `update_item` (action) checks `changes` with the same rules as creation and passes the caller's `revision` to `table.update(...)`. If that revision is out of date, the SDK's `RevisionConflict` goes up to the caller unchanged, so nothing is overwritten. It returns the new revision.\n  - `list_items` (query) takes an optional `status` filter and returns `{\"items\", \"total\"}`, sorted by priority (1 first) and then by title.\n  - `summarize` (query) returns `{\"total\", \"by_status\"}` and always includes all three statuses, with `0` for any that are empty.\n- **Invalid input** raises `InvalidInput` with a plain-language message. That covers:\n  - a missing or blank title\n  - a status that isn't `todo`, `doing` or `done`\n  - a priority that isn't a whole number from 1 to 5 (text, decimals and true/false are rejected)\n  - notes that aren't text\n  - field names not in the brief\n  - empty `changes`\n  - a missing id or revision\n  - an id that doesn't match any item\n- **`app.yaml`** has the App's details, all four entrypoints with their handlers, and the `items` table.\n- **`tests/test_app.py`** checks the exact entrypoint list, the defaults, each rejection case (and that a rejected create stores nothing and a rejected update leaves the item as it was), that the revision goes up after an update, that an out-of-date revision raises `RevisionConflict` and leaves the stored item alone, filtering and sort order, and the summary counts both with items and with none.\n\n**Decisions I made that the brief didn't cover**\n- **Item ids:** I generate them with `uuid4` and don't rely on the SDK to assign one.\n- **Unknown fields:** field names not in the brief are rejected, not ignored.\n- **Missing item:** updating an id that doesn't exist raises `InvalidInput`.\n- **Conflict test:** it recognises `RevisionConflict` by its class name, because SDK.md doesn't say where to import that class from.\n\n**Environment notes**\n- The first `uv run` warned that the active virtualenv (`omni/app/.venv`) doesn't match this project, and it created a new `.venv` in this directory. `app_sdk` can't be imported in a plain `uv run python` there, but pytest found it and the tests ran.\n- I couldn't read the SDK source because the command to inspect it needed approval that wasn't given. So I wrote the code from SDK.md alone.\n\nSome connectors in this session (Aiera, Bigdata.com, Booking.com, Coupler.io, FactSet, Google Drive, LSEG, S&P Global) need to be authorized in claude.ai connector settings before they can be used. This task didn't need any of them.",
+  "ttft_ms": 1880,
+  "type": "result",
+  "duration_ms": 59036,
+  "uuid": "f0bd6b8f-7a2e-4c2c-8bed-96b9b1872336",
+  "ttft_stream_ms": 727,
+  "time_to_request_ms": 37,
+  "first_content_frame_ms": 727,
+  "queued_turn_count": 0,
+  "result_index": 0,
+  "_exit_code": 0,
+  "_stderr": "",
+  "_wall_seconds": 61.9
+}

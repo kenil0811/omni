@@ -1,0 +1,29 @@
+{
+  "fixture": "app-collect",
+  "index": 3,
+  "passed": true,
+  "repair_rounds": 0,
+  "turns": 19,
+  "cost_usd": 0.9382020000000001,
+  "wall_seconds": 121.8,
+  "builder_error": "",
+  "checks": [
+    {
+      "name": "manifest",
+      "passed": true,
+      "detail": "declares ['collect', 'list_records']"
+    },
+    {
+      "name": "app_tests",
+      "passed": true,
+      "detail": "...................                                                      [100%]\n19 passed in 5.83s\n"
+    },
+    {
+      "name": "oracle",
+      "passed": true,
+      "detail": "........                                                                 [100%]\n8 passed in 3.19s\n"
+    }
+  ],
+  "failure_category": "",
+  "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-collect/3/app"
+}

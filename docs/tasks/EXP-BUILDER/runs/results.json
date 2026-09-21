@@ -1,0 +1,437 @@
+[
+  {
+    "fixture": "app-collect",
+    "index": 1,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 21,
+    "cost_usd": 0.9953500000000001,
+    "wall_seconds": 158.9,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['collect', 'list_records']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": "....................                                                     [100%]\n20 passed in 6.82s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": "........                                                                 [100%]\n8 passed in 3.19s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-collect/1/app"
+  },
+  {
+    "fixture": "app-collect",
+    "index": 2,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 14,
+    "cost_usd": 0.7041275,
+    "wall_seconds": 111.8,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['collect', 'list_records']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": "..................                                                       [100%]\n18 passed in 5.30s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": "........                                                                 [100%]\n8 passed in 3.20s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-collect/2/app"
+  },
+  {
+    "fixture": "app-collect",
+    "index": 3,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 19,
+    "cost_usd": 0.9382020000000001,
+    "wall_seconds": 121.8,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['collect', 'list_records']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": "...................                                                      [100%]\n19 passed in 5.83s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": "........                                                                 [100%]\n8 passed in 3.19s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-collect/3/app"
+  },
+  {
+    "fixture": "app-collect",
+    "index": 4,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 12,
+    "cost_usd": 0.6578795000000001,
+    "wall_seconds": 106.9,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['collect', 'list_records']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": "..................                                                       [100%]\n18 passed in 5.82s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": "........                                                                 [100%]\n8 passed in 3.16s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-collect/4/app"
+  },
+  {
+    "fixture": "app-collect",
+    "index": 5,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 15,
+    "cost_usd": 0.771211,
+    "wall_seconds": 113.5,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['collect', 'list_records']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": "....................                                                     [100%]\n20 passed in 6.33s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": "........                                                                 [100%]\n8 passed in 3.18s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-collect/5/app"
+  },
+  {
+    "fixture": "app-files",
+    "index": 1,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 21,
+    "cost_usd": 0.8357125,
+    "wall_seconds": 104.0,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['import_files', 'list_orders']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": "............                                                             [100%]\n12 passed in 0.08s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": ".......                                                                  [100%]\n7 passed in 0.05s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-files/1/app"
+  },
+  {
+    "fixture": "app-files",
+    "index": 2,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 16,
+    "cost_usd": 0.8045994999999999,
+    "wall_seconds": 93.0,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['import_files', 'list_orders']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": ".................                                                        [100%]\n17 passed in 0.10s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": ".......                                                                  [100%]\n7 passed in 0.06s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-files/2/app"
+  },
+  {
+    "fixture": "app-files",
+    "index": 3,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 14,
+    "cost_usd": 0.7555315,
+    "wall_seconds": 86.9,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['import_files', 'list_orders']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": ".............                                                            [100%]\n13 passed in 0.09s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": ".......                                                                  [100%]\n7 passed in 0.05s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-files/3/app"
+  },
+  {
+    "fixture": "app-files",
+    "index": 4,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 14,
+    "cost_usd": 0.6603745,
+    "wall_seconds": 105.6,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['import_files', 'list_orders']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": "...........                                                              [100%]\n11 passed in 0.07s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": ".......                                                                  [100%]\n7 passed in 0.05s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-files/4/app"
+  },
+  {
+    "fixture": "app-files",
+    "index": 5,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 18,
+    "cost_usd": 0.8077254999999999,
+    "wall_seconds": 95.3,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['import_files', 'list_orders']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": "..............                                                           [100%]\n14 passed in 0.08s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": ".......                                                                  [100%]\n7 passed in 0.05s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-files/5/app"
+  },
+  {
+    "fixture": "app-tracker",
+    "index": 1,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 17,
+    "cost_usd": 0.7251759999999999,
+    "wall_seconds": 78.1,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['create_item', 'list_items', 'summarize', 'update_item']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": "....................................                                     [100%]\n36 passed in 0.15s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": "..............                                                           [100%]\n14 passed in 0.07s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-tracker/1/app"
+  },
+  {
+    "fixture": "app-tracker",
+    "index": 2,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 10,
+    "cost_usd": 0.5079215,
+    "wall_seconds": 61.1,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['create_item', 'list_items', 'summarize', 'update_item']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": "............................                                             [100%]\n28 passed in 0.12s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": "..............                                                           [100%]\n14 passed in 0.08s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-tracker/2/app"
+  },
+  {
+    "fixture": "app-tracker",
+    "index": 3,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 10,
+    "cost_usd": 0.512317,
+    "wall_seconds": 63.2,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['create_item', 'list_items', 'summarize', 'update_item']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": "............................                                             [100%]\n28 passed in 0.12s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": "..............                                                           [100%]\n14 passed in 0.07s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-tracker/3/app"
+  },
+  {
+    "fixture": "app-tracker",
+    "index": 4,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 14,
+    "cost_usd": 0.6411815000000001,
+    "wall_seconds": 68.0,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['create_item', 'list_items', 'summarize', 'update_item']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": "...................................                                      [100%]\n35 passed in 0.15s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": "..............                                                           [100%]\n14 passed in 0.08s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-tracker/4/app"
+  },
+  {
+    "fixture": "app-tracker",
+    "index": 5,
+    "passed": true,
+    "repair_rounds": 0,
+    "turns": 10,
+    "cost_usd": 0.5056665,
+    "wall_seconds": 62.4,
+    "builder_error": "",
+    "checks": [
+      {
+        "name": "manifest",
+        "passed": true,
+        "detail": "declares ['create_item', 'list_items', 'summarize', 'update_item']"
+      },
+      {
+        "name": "app_tests",
+        "passed": true,
+        "detail": ".............................                                            [100%]\n29 passed in 0.15s\n"
+      },
+      {
+        "name": "oracle",
+        "passed": true,
+        "detail": "..............                                                           [100%]\n14 passed in 0.08s\n"
+      }
+    ],
+    "failure_category": "",
+    "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-tracker/5/app"
+  }
+]

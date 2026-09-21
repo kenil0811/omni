@@ -1,0 +1,42 @@
+apiVersion: alpha.platform/v0.1
+kind: AppManifest
+
+metadata:
+  name: work-tracker
+  displayName: Work Tracker
+  description: Track pieces of work by status and priority, with safe concurrent edits.
+
+spec:
+  compatibility:
+    sdk: ">=0.0.1 <0.1"
+
+  entrypoints:
+    - id: create_item
+      kind: action
+      handler: handlers.create_item
+      description: Add an item to the tracker.
+
+    - id: update_item
+      kind: action
+      handler: handlers.update_item
+      description: Change an item, rejecting a stale revision.
+
+    - id: list_items
+      kind: query
+      handler: handlers.list_items
+      description: List items, optionally filtered by status.
+
+    - id: summarize
+      kind: query
+      handler: handlers.summarize
+      description: Count items by status.
+
+  resources:
+    - id: items
+      kind: table
+
+  tests:
+    - id: unit
+      kind: unit
+      requiredFor: [build]
+      command: pytest tests/

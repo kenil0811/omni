@@ -1,0 +1,6 @@
+order_id,customer,amount,status
+A-1,Rivera Ltd,120.00,paid
+A-2,Okonkwo GmbH,75.50,new
+A-3,Tanaka Co,310.00,paid
+A-4,Silva SA,42.25,cancelled
+A-5,Dubois SARL,99.99,new

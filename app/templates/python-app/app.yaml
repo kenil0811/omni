@@ -1,0 +1,33 @@
+apiVersion: alpha.platform/v0.1
+kind: AppManifest
+
+# Source App Manifest. Declares what this App is and what it needs.
+# No credentials, no absolute paths, no platform identifiers, no user data.
+
+metadata:
+  name: example-app
+  displayName: Example App
+  description: Replace this with what the App does, in one sentence.
+
+spec:
+  compatibility:
+    sdk: ">=0.0.1 <0.1"
+
+  # Every Entrypoint is one capability. handler is "<module>.<function>"
+  # resolved against src/. Declare one per user-visible operation.
+  entrypoints:
+    - id: example
+      kind: action # action | query | job
+      handler: handlers.example
+      description: Replace with what this Entrypoint does.
+
+  # App-scoped state. Tables hold records; file stores hold Artifact-backed files.
+  resources: []
+  # - id: items
+  #   kind: table
+
+  tests:
+    - id: unit
+      kind: unit
+      requiredFor: [build]
+      command: pytest tests/

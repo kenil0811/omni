@@ -1,0 +1,29 @@
+{
+  "fixture": "app-files",
+  "index": 2,
+  "passed": true,
+  "repair_rounds": 0,
+  "turns": 16,
+  "cost_usd": 0.8045994999999999,
+  "wall_seconds": 93.0,
+  "builder_error": "",
+  "checks": [
+    {
+      "name": "manifest",
+      "passed": true,
+      "detail": "declares ['import_files', 'list_orders']"
+    },
+    {
+      "name": "app_tests",
+      "passed": true,
+      "detail": ".................                                                        [100%]\n17 passed in 0.10s\n"
+    },
+    {
+      "name": "oracle",
+      "passed": true,
+      "detail": ".......                                                                  [100%]\n7 passed in 0.06s\n"
+    }
+  ],
+  "failure_category": "",
+  "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-files/2/app"
+}

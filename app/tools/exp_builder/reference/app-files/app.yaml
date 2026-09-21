@@ -1,0 +1,32 @@
+apiVersion: alpha.platform/v0.1
+kind: AppManifest
+
+metadata:
+  name: order-intake
+  displayName: Order Intake
+  description: Import order CSV exports, keep the valid rows, and explain the rejected ones.
+
+spec:
+  compatibility:
+    sdk: ">=0.0.1 <0.1"
+
+  entrypoints:
+    - id: import_files
+      kind: action
+      handler: handlers.import_files
+      description: Import selected CSV files and write a summary report.
+
+    - id: list_orders
+      kind: query
+      handler: handlers.list_orders
+      description: List imported orders, optionally filtered by status.
+
+  resources:
+    - id: orders
+      kind: table
+
+  tests:
+    - id: unit
+      kind: unit
+      requiredFor: [build]
+      command: pytest tests/

@@ -1,0 +1,139 @@
+{
+  "duration_api_ms": 64491,
+  "stop_reason": "end_turn",
+  "session_id": "27f94fa8-904f-4942-af19-47cef0bb0bfb",
+  "total_cost_usd": 0.6411815000000001,
+  "usage": {
+    "input_tokens": 20,
+    "cache_creation_input_tokens": 29223,
+    "cache_read_input_tokens": 287439,
+    "output_tokens": 8131,
+    "output_tokens_details": {
+      "thinking_tokens": 772
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 29223,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 1009,
+        "cache_read_input_tokens": 42485,
+        "cache_creation_input_tokens": 210,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 210
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1802,
+      "outputTokens": 11,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001857,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 20,
+      "outputTokens": 8131,
+      "cacheReadInputTokens": 287439,
+      "cacheCreationInputTokens": 29223,
+      "webSearchRequests": 0,
+      "costUSD": 0.6393245000000001,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 772,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01SHgg3vHDNAja6adDykY9KV",
+      "tool_input": {
+        "command": "echo $VIRTUAL_ENV; ls; uv run --active python -c \"import app_sdk, inspect; print(app_sdk.__file__); print(dir(app_sdk))\" 2>&1 | tail -5; ls ../; ls ../../",
+        "description": "Check active venv for app_sdk"
+      }
+    },
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01GeSWW9uW6WEoU9z5HeK7ZS",
+      "tool_input": {
+        "command": "uv run --active python -c \"import app_sdk, inspect; print(app_sdk.__file__); print(dir(app_sdk))\" 2>&1 | tail -5; ls -a . ..",
+        "description": "Check active venv for app_sdk"
+      }
+    },
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_019VSEBPYSUbtdgSKsm2b7HD",
+      "tool_input": {
+        "command": "uv run --active python -c \"import app_sdk; print(app_sdk.__file__); print(dir(app_sdk))\"",
+        "description": "Check active venv for app_sdk"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 14,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "I built the Work Tracker App, and `uv run pytest tests/` passes: **35 passed in 0.18s**.\n\n**What changed**\n- **`src/handlers.py`**: the placeholder `example` entrypoint is gone, replaced by the four the brief names:\n  - `create_item` validates the fields, fills in the defaults (`todo`, priority `3`, empty notes) and returns `{\"id\", \"revision\": 1}`.\n  - `update_item` needs `id`, a whole-number `revision` and a non-empty `changes`, which it checks by the same rules as creation. It then updates with the caller's revision, so a stale revision raises the SDK's `RevisionConflict` instead of overwriting.\n  - `list_items` takes an optional `status` filter and orders by priority, then title. It returns `{\"items\", \"total\"}`.\n  - `summarize` returns `{\"total\", \"by_status\"}`, always with all three status keys.\n- **`app.yaml`**: renamed the App to `work-tracker`, declared the four entrypoints with their handlers, and added the `items` table.\n- **`tests/test_app.py`**: 35 tests using the real harness. They check the exact entrypoint list, the defaults, the ordering, the status filter, the summary including zero counts, and that a stale revision raises `RevisionConflict` without changing the stored item. They also check that bad input raises `InvalidInput` and leaves the stored data unchanged: an empty or blank title, a wrong status, priority `0`, `6`, `\"2\"`, `2.0` or `True`, notes that aren't text, unknown fields, empty changes, and a missing id or revision.\n\n**Choices the brief didn't settle**\n- **Unknown fields are rejected**, in both create and update. I took \"reject anything else\" to cover them.\n- **Updating an id that doesn't exist** raises `InvalidInput` (\"No item with id \u2026\"). Otherwise the caller would get the SDK's raw `RecordNotFound`.\n- **Titles are stored without leading or trailing spaces**, and a title that is only spaces is rejected.\n- **`list_items` rejects filters other than `status`.**\n- **Items in `list_items` are full records**, including `created_at` and `updated_at`.\n\n**Environment notes**\n- `uv` warns that the active `VIRTUAL_ENV` (`omni/app/.venv`) doesn't match this project, so it made a local `.venv/` in this App directory to run the tests.\n- A direct `import app_sdk` failed in that `.venv`, so I read the SDK source under `omni/app/packages/app-sdk-python` to check its API. The pytest run itself imported `app_sdk` fine.\n\nNo dependencies were added, and nothing outside this directory was edited.",
+  "ttft_ms": 2136,
+  "type": "result",
+  "duration_ms": 64602,
+  "uuid": "cd21d158-631d-4e81-8fe5-737b24f4fb2d",
+  "ttft_stream_ms": 871,
+  "time_to_request_ms": 44,
+  "first_content_frame_ms": 871,
+  "queued_turn_count": 0,
+  "result_index": 0,
+  "_exit_code": 0,
+  "_stderr": "",
+  "_wall_seconds": 67.4
+}

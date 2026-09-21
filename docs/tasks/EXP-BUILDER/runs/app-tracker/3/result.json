@@ -1,0 +1,29 @@
+{
+  "fixture": "app-tracker",
+  "index": 3,
+  "passed": true,
+  "repair_rounds": 0,
+  "turns": 10,
+  "cost_usd": 0.512317,
+  "wall_seconds": 63.2,
+  "builder_error": "",
+  "checks": [
+    {
+      "name": "manifest",
+      "passed": true,
+      "detail": "declares ['create_item', 'list_items', 'summarize', 'update_item']"
+    },
+    {
+      "name": "app_tests",
+      "passed": true,
+      "detail": "............................                                             [100%]\n28 passed in 0.12s\n"
+    },
+    {
+      "name": "oracle",
+      "passed": true,
+      "detail": "..............                                                           [100%]\n14 passed in 0.07s\n"
+    }
+  ],
+  "failure_category": "",
+  "workspace": "/Users/kenil/Desktop/dev/omni/docs/tasks/EXP-BUILDER/runs/app-tracker/3/app"
+}

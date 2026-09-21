@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-09-14T09:00:00Z",
+  "rows": [
+    {"ref": "A-1001", "title": "Cast iron skillet", "price": 39.5, "category": "kitchen"},
+    {"ref": "A-1002", "title": "Standing desk", "price": 289.0, "category": "office"},
+    {"ref": "A-1003", "title": "Desk lamp", "price": 45.0, "category": "office"},
+    {"ref": "A-1004", "title": "Wool blanket", "price": 120.0, "category": "home"},
+    {"ref": "A-1005", "title": "Espresso grinder", "price": 210.0, "category": "kitchen"},
+    {"ref": "A-1006", "title": "Bookshelf", "price": 95.0, "category": "home"},
+    {"ref": "A-1007", "title": "Monitor arm", "price": 78.5, "category": "office"},
+    {"ref": "A-1008", "title": "Ceramic mug", "price": 14.0, "category": "kitchen"},
+    {"ref": "A-1003", "title": "Desk lamp", "price": 45.0, "category": "office"},
+    {"ref": "A-1006", "title": "Bookshelf", "price": 95.0, "category": "home"},
+    {"ref": "A-1009", "title": "", "price": 30.0, "category": "home"},
+    {"ref": "A-1010", "title": "Broken entry", "price": "not a number", "category": "kitchen"}
+  ]
+}

@@ -1,0 +1,37 @@
+# Alpha — developer commands. See docs/PLAN.md.
+# Commands fail honestly: a missing tool is reported, never counted as a pass.
+
+default:
+    @just --list
+
+# Install workspace dependencies from the lockfile.
+bootstrap:
+    uv sync
+
+# Everything that must be green before a step is called done.
+check: lint test check-oracles
+
+lint:
+    uv run ruff check .
+    uv run ruff format --check .
+
+# Suite that runs without a Builder or network. Oracles skip without an App.
+test:
+    uv run pytest -q
+
+# Prove the oracles and the runner's checks are correct, using reference Apps
+# the Builder never sees. Run this after changing a brief or an oracle.
+check-oracles:
+    uv run pytest tools/exp_builder/selftest_test.py -q
+
+# Run one oracle against an App you point at.
+oracle fixture app:
+    ALPHA_APP_DIR="{{app}}" uv run pytest fixtures/apps/{{fixture}}/oracle_test.py -q
+
+# EXP-BUILDER (plan step 1). Needs the `claude` CLI installed and logged in.
+exp-builder *args:
+    uv run python tools/exp_builder/run.py {{args}}
+
+# EXP-PACKAGE (plan step 2): build the arm64 .app, ad-hoc signed.
+package-mac:
+    packaging/macos/build_app.sh
