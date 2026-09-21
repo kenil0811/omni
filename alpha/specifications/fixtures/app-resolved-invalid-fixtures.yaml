@@ -1,0 +1,137 @@
+fixtureVersion: alpha.platform/resolved-app-invalid-fixtures/v1
+description: JSON Patch mutations applied to ../examples/reference-app.resolved.json unless a case supplies another base.
+
+cases:
+  - id: workspace-binding-leak
+    patch:
+      - op: add
+        path: /spec/resources/0/workspaceResourceId
+        value: resource-prod-123
+    expectedError: RM_SCHEMA_INVALID
+    phase: schema
+
+  - id: fixed-policy-weakened
+    patch:
+      - op: replace
+        path: /spec/policies/directNetwork
+        value: true
+    expectedError: RM_POLICY_WEAKENED
+    phase: schema
+
+  - id: missing-default
+    patch:
+      - op: remove
+        path: /spec/entrypoints/1/execution/retry
+    expectedError: RM_DEFAULT_MISSING
+    phase: schema
+
+  - id: capability-risk-reduced
+    patch:
+      - op: replace
+        path: /spec/capabilities/1/registry/riskClass
+        value: low
+    expectedError: RM_REGISTRY_MISMATCH
+    phase: semantic
+
+  - id: closure-adds-undeclared-capability
+    patch:
+      - op: add
+        path: /spec/entrypoints/1/executionClosure/capabilityRefs/-
+        value: records-write
+    expectedError: RM_CLOSURE_INVALID
+    phase: semantic
+
+  - id: artifact-digest-disagrees
+    patch:
+      - op: replace
+        path: /spec/components/0/artifact/digest
+        value: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    expectedError: RM_FILE_MISMATCH
+    phase: package
+
+  - id: runtime-provider-binding-leak
+    patch:
+      - op: add
+        path: /spec/components/0/runtimeProfile/providerEndpoint
+        value: https://runner.internal.example
+    expectedError: RM_SCHEMA_INVALID
+    phase: schema
+
+  - id: approval-provenance-missing
+    patch:
+      - op: remove
+        path: /spec/policies/approvalRequests/0/provenance
+    expectedError: RM_SCHEMA_INVALID
+    phase: schema
+
+  - id: source-webhook-enabled-in-app-version
+    base: ../examples/reference-webhook-app.resolved.json
+    patch:
+      - op: replace
+        path: /spec/triggers/0/enabled
+        value: true
+    expectedError: RM_SCHEMA_INVALID
+    phase: schema
+
+  - id: webhook-verifier-definition-missing
+    base: ../examples/reference-webhook-app.resolved.json
+    patch:
+      - op: remove
+        path: /spec/triggers/0/verification/registry/definitionDigest
+    expectedError: RM_SCHEMA_INVALID
+    phase: schema
+
+  - id: webhook-ingress-interface-mismatch
+    base: ../examples/reference-webhook-app.resolved.json
+    patch:
+      - op: replace
+        path: /spec/triggers/0/ingressServiceRequirement/interface
+        value: platform.runner.python/v0.1
+    expectedError: RM_REGISTRY_MISMATCH
+    phase: semantic
+
+  - id: webhook-public-endpoint-leak
+    base: ../examples/reference-webhook-app.resolved.json
+    patch:
+      - op: add
+        path: /spec/triggers/0/endpointUrl
+        value: https://hooks.example.test/raw-secret-path
+    expectedError: RM_SCHEMA_INVALID
+    phase: schema
+
+  - id: webhook-normalization-mapping-missing
+    base: ../examples/reference-webhook-app.resolved.json
+    patch:
+      - op: replace
+        path: /spec/triggers/0/normalization/mapping
+        value: null
+    expectedError: RM_SCHEMA_INVALID
+    phase: schema
+
+  - id: webhook-exactly-once-claim
+    base: ../examples/reference-webhook-app.resolved.json
+    patch:
+      - op: replace
+        path: /spec/triggers/0/deliverySemantics
+        value: exactly-once
+    expectedError: RM_SCHEMA_INVALID
+    phase: schema
+
+  - id: action-profile-candidate-on-non-http-capability
+    patch:
+      - op: replace
+        path: /spec/capabilities/0/httpActionProfileCandidate
+        value:
+          candidateDigest: sha256:6868686868686868686868686868686868686868686868686868686868686868
+          profileSchemaDigest: sha256:7070707070707070707070707070707070707070707070707070707070707070
+    expectedError: RM_DERIVATION_INCOMPLETE
+    phase: semantic
+
+  - id: action-profile-candidate-schema-digest-missing
+    patch:
+      - op: replace
+        path: /spec/capabilities/0/httpActionProfileCandidate
+        value:
+          candidateDigest: sha256:6868686868686868686868686868686868686868686868686868686868686868
+    expectedError: RM_SCHEMA_INVALID
+    phase: schema

@@ -1,0 +1,254 @@
+{
+  "apiVersion": "alpha.platform.release/v0.1",
+  "kind": "ReleaseResolutionRecord",
+  "metadata": {
+    "appId": "app-work-queue-sync",
+    "appVersionId": "aver-work-queue-sync-003",
+    "environment": "active",
+    "packageDigest": "sha256:8989898989898989898989898989898989898989898989898989898989898989",
+    "releaseId": "rel-work-queue-sync-active",
+    "releaseRevisionId": "rrev-work-queue-sync-001",
+    "resolvedManifestDigest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+    "workspaceId": "wsp-alpha-demo"
+  },
+  "resolution": {
+    "inputDigest": "sha256:9090909090909090909090909090909090909090909090909090909090909090",
+    "policy": {
+      "digest": "sha256:0505050505050505050505050505050505050505050505050505050505050505",
+      "snapshotId": "policy-wsp-alpha-active-004"
+    },
+    "registry": {
+      "digest": "sha256:0404040404040404040404040404040404040404040404040404040404040404",
+      "snapshotId": "registry-2026-09-16.1"
+    },
+    "resolver": {
+      "digest": "sha256:0303030303030303030303030303030303030303030303030303030303030303",
+      "id": "platform.release-resolver",
+      "version": "0.1.0"
+    }
+  },
+  "spec": {
+    "deployment": {
+      "target": "cloud",
+      "persistentStateLocation": "cloud",
+      "defaultExecutionLocation": "cloud",
+      "scheduleAuthority": "cloud",
+      "availability": "managed-always-on"
+    },
+    "capabilityBindings": [
+      {
+        "approval": {
+          "mode": "first-use",
+          "provenance": [
+            "registry-minimum",
+            "source-request"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "http.request",
+        "capabilityRef": "crm-task-create",
+        "connectionBindingRef": "crm-api",
+        "constraints": {
+          "host": "api.example-crm.com",
+          "maxCallsPerRun": 20,
+          "maxItemsPerCall": 1,
+          "method": "POST",
+          "pathTemplate": "/v1/projects/{projectId}/tasks",
+          "port": 443,
+          "requestBytes": 65536,
+          "requestMediaTypes": [
+            "application/json"
+          ],
+          "requestSchemaDigest": "sha256:7373737373737373737373737373737373737373737373737373737373737373",
+          "responseBytes": 262144,
+          "responseMediaTypes": [
+            "application/json"
+          ],
+          "responseSchemaDigest": "sha256:7474747474747474747474747474747474747474747474747474747474747474",
+          "scheme": "https",
+          "timeoutSeconds": 30
+        },
+        "constraintsDigest": "sha256:9696969696969696969696969696969696969696969696969696969696969696",
+        "definitionDigest": "sha256:6969696969696969696969696969696969696969696969696969696969696969",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "durable",
+        "grant": {
+          "digest": "sha256:9595959595959595959595959595959595959595959595959595959595959595",
+          "grantId": "grant-crm-task-create",
+          "revisionId": "grantrev-crm-task-create-001"
+        },
+        "httpActionProfileBinding": {
+          "approvalDecisionId": "apd-hap-crm-task-create-001",
+          "candidateDigest": "sha256:6868686868686868686868686868686868686868686868686868686868686868",
+          "connectionBindingRef": "crm-api",
+          "profileDigest": "sha256:ded4bbe450c7c0fd3e8cfc9dc800bece5c81ec4ccd701358778467434d0b1f44",
+          "profileId": "hap-crm-task-create",
+          "profileRevisionId": "haprev-crm-task-create-001"
+        },
+        "idempotency": {
+          "deduplicationWindowSeconds": 2592000,
+          "required": true
+        },
+        "providerBindingRef": "http-provider"
+      }
+    ],
+    "checks": [
+      {
+        "code": "RR_BINDINGS_VALID",
+        "detailsDigest": null,
+        "id": "binding-integrity",
+        "status": "pass",
+        "subjectRef": "release"
+      },
+      {
+        "code": "RR_ACTION_PROFILE_VALID",
+        "detailsDigest": "sha256:9898989898989898989898989898989898989898989898989898989898989898",
+        "id": "action-profile",
+        "status": "pass",
+        "subjectRef": "crm-task-create"
+      },
+      {
+        "code": "RR_TESTS_VALID",
+        "detailsDigest": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+        "id": "release-tests",
+        "status": "pass",
+        "subjectRef": "validation-set-work-queue-sync-003"
+      }
+    ],
+    "configuration": null,
+    "connectionBindings": [
+      {
+        "authorizationRevisionId": "connrev-crm-api-004",
+        "availability": "connected",
+        "connectionId": "conn-crm-api",
+        "connectionRef": "crm-api",
+        "connector": "http.oauth2",
+        "grantedScopes": [
+          "tasks.write"
+        ],
+        "onUnavailableResolved": "disable-dependent-capabilities",
+        "providerBindingRef": "http-oauth-provider"
+      }
+    ],
+    "contextBindings": [],
+    "entrypointBindings": [
+      {
+        "authorityProfile": {
+          "definitionDigest": "sha256:2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c",
+          "id": "run-authority",
+          "version": "0.1.0"
+        },
+        "capabilityBindingRefs": [
+          "crm-task-create"
+        ],
+        "contextBindingRefs": [],
+        "disabledReasons": [],
+        "effectiveExecution": {
+          "budgets": {
+            "browserSeconds": 0,
+            "capabilityCalls": 20,
+            "costMicrousd": 500000,
+            "modelCalls": 0
+          },
+          "concurrency": {
+            "maxParallel": 1,
+            "mode": "singleton"
+          },
+          "retry": {
+            "baseDelaySeconds": 5,
+            "maxAttempts": 3,
+            "strategy": "exponential"
+          },
+          "timeoutSeconds": 300
+        },
+        "enabled": true,
+        "entrypointRef": "create-crm-tasks",
+        "executionClosureDigest": "sha256:9797979797979797979797979797979797979797979797979797979797979797",
+        "resourceBindings": [],
+        "runtimeServiceBindingRef": "python-runner"
+      }
+    ],
+    "resourceBindings": [],
+    "scheduleBindings": [],
+    "serviceBindings": [
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "id": "regional-ha",
+          "version": "0.1.0"
+        },
+        "id": "capability-broker",
+        "interface": "platform.capability-broker/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "platform-capability-broker",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:9191919191919191919191919191919191919191919191919191919191919191",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:9292929292929292929292929292929292929292929292929292929292929292",
+          "id": "ssrf-protected-egress",
+          "version": "0.1.0"
+        },
+        "id": "http-provider",
+        "interface": "platform.capability.http/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "managed-http-egress",
+          "policyProfile": "managed-standard",
+          "routingClass": "regional-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:9393939393939393939393939393939393939393939393939393939393939393",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:9494949494949494949494949494949494949494949494949494949494949494",
+          "id": "credential-brokered",
+          "version": "0.1.0"
+        },
+        "id": "http-oauth-provider",
+        "interface": "platform.connector.http-oauth2/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "platform-http-oauth-broker",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:1818181818181818181818181818181818181818181818181818181818181818",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a",
+          "id": "standard-isolated",
+          "version": "0.1.0"
+        },
+        "id": "python-runner",
+        "interface": "platform.runner.python/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "cloud-python-runner",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      }
+    ],
+    "status": "ready",
+    "webhookBindings": []
+  }
+}

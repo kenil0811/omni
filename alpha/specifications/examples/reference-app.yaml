@@ -1,0 +1,216 @@
+apiVersion: alpha.platform/v0.1
+kind: AppManifest
+
+metadata:
+  name: scheduled-record-monitor
+  displayName: Scheduled Record Monitor
+  description: Check configured websites, retain new and changed records, provide a searchable interface, and notify Workspace members about matches.
+  labels:
+    fixture: website-monitoring
+
+spec:
+  compatibility:
+    sdk: ">=0.1 <0.2"
+
+  configuration:
+    schema: schemas/config.schema.json
+    uiSchema: ui/config.ui.json
+    defaults: ui/config.defaults.json
+
+  components:
+    - id: monitor-worker
+      kind: handler-bundle
+      source: components/backend.tar.zst
+      dependencyLock: components/backend.lock.json
+
+    - id: records-view
+      kind: native-view
+      source: ui/records.yaml
+
+  surfaces:
+    - id: records
+      kind: native-page
+      componentRef: records-view
+      title: Records
+      route: /
+      entrypointRefs:
+        - refresh-records
+        - search-records
+      resourceRefs:
+        - monitored-records
+
+  entrypoints:
+    - id: refresh-records
+      kind: job
+      componentRef: monitor-worker
+      handler: handlers.refresh_records
+      inputSchema: schemas/refresh-input.schema.json
+      outputSchema: schemas/refresh-output.schema.json
+      invocation:
+        - manual
+        - schedule
+      capabilities:
+        - browser-read
+        - records-read
+        - records-write
+        - notification-send
+      resourceAccess:
+        - resourceRef: monitored-records
+          modes:
+            - read
+            - append
+            - write
+      execution:
+        timeoutSeconds: 1200
+        retry:
+          maxAttempts: 3
+          strategy: exponential
+          baseDelaySeconds: 10
+        concurrency:
+          mode: singleton
+        budgets:
+          modelCalls: 100
+          browserSeconds: 900
+          capabilityCalls: 5000
+          costMicrousd: 20000000
+      idempotency:
+        mode: occurrence-key
+      outcome:
+        evaluatorRefs:
+          - refresh-outcome
+        humanReview: on-failure
+
+    - id: search-records
+      kind: query
+      componentRef: monitor-worker
+      handler: handlers.search_records
+      inputSchema: schemas/search-input.schema.json
+      outputSchema: schemas/search-output.schema.json
+      invocation:
+        - ui
+        - chat
+      capabilities:
+        - records-read
+      resourceAccess:
+        - resourceRef: monitored-records
+          modes:
+            - read
+      execution:
+        timeoutSeconds: 30
+        concurrency:
+          mode: parallel
+          maxParallel: 50
+      idempotency:
+        mode: none
+      outcome:
+        evaluatorRefs:
+          - search-fixture
+        humanReview: never
+
+  triggers:
+    - id: weekly-refresh
+      kind: schedule
+      entrypointRef: refresh-records
+      settingsSchema: schemas/schedule.schema.json
+
+  resources:
+    - id: monitored-records
+      kind: table
+      schemaRef: schemas/record.schema.json
+      schemaVersion: 1.0.0
+      classificationHint: internal
+
+  connections:
+    - id: source-browser
+      connector: browser.profile
+      onUnavailable: use-unconnected-mode
+      scopes:
+        - session.use
+      purpose: Use an approved signed-in browser profile for sources that require authentication.
+
+    - id: workspace-notifications
+      connector: notification.workspace
+      onUnavailable: disable-dependent-capabilities
+      scopes:
+        - notification.send
+      purpose: Notify approved Workspace recipients when matching records are found.
+
+  capabilities:
+    - id: browser-read
+      capability: browser.navigate
+      connectionRef: source-browser
+      purpose: Visit only websites configured by the user.
+      constraints:
+        domainSource: /sources/*/domain
+        methods:
+          - GET
+
+    - id: records-read
+      capability: data.table.read
+      purpose: Read this App's monitored records.
+      constraints:
+        resourceRefs:
+          - monitored-records
+
+    - id: records-write
+      capability: data.table.write
+      purpose: Add new records and update previously observed records.
+      constraints:
+        resourceRefs:
+          - monitored-records
+        operations:
+          - insert
+          - update
+
+    - id: notification-send
+      capability: notification.send
+      connectionRef: workspace-notifications
+      purpose: Notify approved Workspace recipients about matches.
+      constraints:
+        recipients: workspace-members
+        maximumPerRun: 20
+
+  policies:
+    approvalRequests:
+      - capabilityRef: notification-send
+        mode: first-use
+
+  observability:
+    evidence:
+      capture:
+        - inputs
+        - outputs
+        - capability-results
+        - screenshots
+      redactPaths:
+        - /authentication
+        - /session
+
+  tests:
+    - id: parser-unit
+      kind: unit
+      requiredFor:
+        - build
+      command: pytest tests/test_parser.py
+
+    - id: search-fixture
+      kind: fixture
+      requiredFor:
+        - preview
+        - release
+      fixture: tests/search.fixture.json
+      evaluator: evaluators.search_fixture
+
+    - id: refresh-outcome
+      kind: outcome
+      requiredFor:
+        - preview
+        - release
+      fixture: tests/refresh.fixture.json
+      evaluator: evaluators.refresh_outcome
+
+    - id: source-health
+      kind: health
+      requiredFor:
+        - release
+      evaluator: evaluators.source_health

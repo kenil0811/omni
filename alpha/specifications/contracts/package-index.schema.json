@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:alpha:app-package-index:v0.1",
+  "title": "Alpha App Package Index v0.1",
+  "description": "Strict inventory whose canonical digest identifies one sealed App Version package.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "sourceManifest", "resolvedManifest", "files"],
+  "properties": {
+    "apiVersion": { "const": "alpha.platform.package/v0.1" },
+    "kind": { "const": "AppPackageIndex" },
+    "sourceManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "digest", "canonicalDigest"],
+      "properties": {
+        "path": { "const": "app.yaml" },
+        "digest": { "$ref": "#/$defs/digest" },
+        "canonicalDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "resolvedManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "digest"],
+      "properties": {
+        "path": { "const": "app.resolved.json" },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/fileEntry" }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "packagePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "fileEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "mediaType", "sizeBytes", "digest", "role", "owner"],
+      "properties": {
+        "path": { "$ref": "#/$defs/packagePath" },
+        "mediaType": { "type": "string", "minLength": 3 },
+        "sizeBytes": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "digest": { "$ref": "#/$defs/digest" },
+        "role": {
+          "enum": [
+            "source-manifest",
+            "resolved-manifest",
+            "schema",
+            "component-source",
+            "component-artifact",
+            "dependency-lock",
+            "agent-definition",
+            "ui-definition",
+            "test",
+            "test-fixture",
+            "asset"
+          ]
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^(package|configuration|component|surface|entrypoint|trigger|resource|connection|capability|context|test):[A-Za-z0-9._/-]+$"
+        }
+      }
+    }
+  }
+}

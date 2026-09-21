@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:alpha:capability-request:v0.1",
+  "title": "Capability Request v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "authority", "idempotency", "executeBefore", "input"],
+  "properties": {
+    "apiVersion": { "const": "alpha.platform.capability/v0.1" },
+    "kind": { "const": "CapabilityRequest" },
+    "metadata": { "$ref": "#/$defs/metadata" },
+    "authority": { "$ref": "#/$defs/authority" },
+    "idempotency": {
+      "oneOf": [
+        { "$ref": "#/$defs/idempotency" },
+        { "type": "null" }
+      ]
+    },
+    "executeBefore": { "type": "string", "format": "date-time" },
+    "input": {
+      "type": "object",
+      "maxProperties": 1000
+    }
+  },
+  "$defs": {
+    "opaqueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "logicalRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["callId", "runId", "entrypointRef", "sequence"],
+      "properties": {
+        "callId": { "$ref": "#/$defs/opaqueId" },
+        "runId": { "$ref": "#/$defs/opaqueId" },
+        "entrypointRef": { "$ref": "#/$defs/logicalRef" },
+        "sequence": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "releaseResolutionDigest",
+        "capabilityRef",
+        "capability",
+        "definitionDigest",
+        "authorityLeaseId"
+      ],
+      "properties": {
+        "releaseResolutionDigest": { "$ref": "#/$defs/digest" },
+        "capabilityRef": { "$ref": "#/$defs/logicalRef" },
+        "capability": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "definitionDigest": { "$ref": "#/$defs/digest" },
+        "authorityLeaseId": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "idempotency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "scope"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[^\\r\\n]+$"
+        },
+        "scope": { "const": "app-capability-target" }
+      }
+    }
+  }
+}

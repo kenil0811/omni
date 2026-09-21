@@ -1,0 +1,19 @@
+{
+  "apiVersion": "alpha.platform.app-ui/v0.1",
+  "kind": "AppUiResponse",
+  "requestId": "aui-request-refresh-001",
+  "sessionId": "aui-session-monitor-001",
+  "status": "accepted",
+  "resultSchemaDigest": null,
+  "result": null,
+  "receipt": {
+    "operationId": "operation-refresh-20260917-001",
+    "state": "accepted",
+    "acceptedAt": "2026-09-17T15:02:00Z",
+    "runId": "run-monitor-1842",
+    "approvalId": null,
+    "deviceOperationId": null
+  },
+  "error": null,
+  "completedAt": null
+}

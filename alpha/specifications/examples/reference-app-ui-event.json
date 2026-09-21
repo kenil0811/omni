@@ -1,0 +1,22 @@
+{
+  "apiVersion": "alpha.platform.app-ui/v0.1",
+  "kind": "AppUiEvent",
+  "sessionId": "aui-session-monitor-001",
+  "eventId": "aui-event-run-1842-004",
+  "cursor": "aui-cursor-000004",
+  "sequence": 4,
+  "topic": "run",
+  "type": "run.state-changed",
+  "subject": {
+    "kind": "run",
+    "id": "run-monitor-1842"
+  },
+  "payloadSchemaDigest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "payload": {
+    "state": "running",
+    "stage": "Reading approved sources",
+    "completedUnits": 2,
+    "totalUnits": 6
+  },
+  "occurredAt": "2026-09-17T15:02:12Z"
+}

@@ -1,0 +1,488 @@
+{
+  "apiVersion": "alpha.platform.release/v0.1",
+  "kind": "ReleaseResolutionRecord",
+  "metadata": {
+    "appId": "app-scheduled-record-monitor",
+    "appVersionId": "aver-scheduled-record-monitor-012",
+    "environment": "active",
+    "packageDigest": "sha256:0202020202020202020202020202020202020202020202020202020202020202",
+    "releaseId": "rel-scheduled-record-monitor-active",
+    "releaseRevisionId": "rrev-scheduled-record-monitor-001",
+    "resolvedManifestDigest": "sha256:0101010101010101010101010101010101010101010101010101010101010101",
+    "workspaceId": "wsp-alpha-demo"
+  },
+  "resolution": {
+    "inputDigest": "sha256:0606060606060606060606060606060606060606060606060606060606060606",
+    "policy": {
+      "digest": "sha256:0505050505050505050505050505050505050505050505050505050505050505",
+      "snapshotId": "policy-wsp-alpha-active-004"
+    },
+    "registry": {
+      "digest": "sha256:0404040404040404040404040404040404040404040404040404040404040404",
+      "snapshotId": "registry-2026-09-16.1"
+    },
+    "resolver": {
+      "digest": "sha256:0303030303030303030303030303030303030303030303030303030303030303",
+      "id": "platform.release-resolver",
+      "version": "0.1.0"
+    }
+  },
+  "spec": {
+    "deployment": {
+      "target": "cloud",
+      "persistentStateLocation": "cloud",
+      "defaultExecutionLocation": "cloud",
+      "scheduleAuthority": "cloud",
+      "availability": "managed-always-on"
+    },
+    "capabilityBindings": [
+      {
+        "approval": {
+          "mode": "never",
+          "provenance": [
+            "registry-minimum"
+          ]
+        },
+        "budgetDimensions": [
+          "browserSeconds",
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "browser.navigate",
+        "capabilityRef": "browser-read",
+        "connectionBindingRef": "source-browser",
+        "constraints": {
+          "domainSource": "/sources/*/domain",
+          "methods": [
+            "GET"
+          ]
+        },
+        "constraintsDigest": "sha256:2121212121212121212121212121212121212121212121212121212121212121",
+        "definitionDigest": "sha256:1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "durable",
+        "grant": {
+          "digest": "sha256:2020202020202020202020202020202020202020202020202020202020202020",
+          "grantId": "grant-browser-read",
+          "revisionId": "grantrev-browser-read-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 86400,
+          "required": false
+        },
+        "providerBindingRef": "browser-provider"
+      },
+      {
+        "approval": {
+          "mode": "first-use",
+          "provenance": [
+            "registry-minimum",
+            "source-request"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "notification.send",
+        "capabilityRef": "notification-send",
+        "connectionBindingRef": "workspace-notifications",
+        "constraints": {
+          "maximumPerRun": 20,
+          "recipients": "workspace-members"
+        },
+        "constraintsDigest": "sha256:2424242424242424242424242424242424242424242424242424242424242424",
+        "definitionDigest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "durable",
+        "grant": {
+          "digest": "sha256:2323232323232323232323232323232323232323232323232323232323232323",
+          "grantId": "grant-notification-send",
+          "revisionId": "grantrev-notification-send-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 2592000,
+          "required": true
+        },
+        "providerBindingRef": "notification-provider"
+      },
+      {
+        "approval": {
+          "mode": "never",
+          "provenance": [
+            "registry-minimum"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "data.table.read",
+        "capabilityRef": "records-read",
+        "connectionBindingRef": null,
+        "constraints": {
+          "resourceRefs": [
+            "monitored-records"
+          ]
+        },
+        "constraintsDigest": "sha256:2727272727272727272727272727272727272727272727272727272727272727",
+        "definitionDigest": "sha256:2525252525252525252525252525252525252525252525252525252525252525",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "inline",
+        "grant": {
+          "digest": "sha256:2626262626262626262626262626262626262626262626262626262626262626",
+          "grantId": "grant-records-read",
+          "revisionId": "grantrev-records-read-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 86400,
+          "required": false
+        },
+        "providerBindingRef": "table-provider"
+      },
+      {
+        "approval": {
+          "mode": "never",
+          "provenance": [
+            "registry-minimum"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "data.table.write",
+        "capabilityRef": "records-write",
+        "connectionBindingRef": null,
+        "constraints": {
+          "operations": [
+            "insert",
+            "update"
+          ],
+          "resourceRefs": [
+            "monitored-records"
+          ]
+        },
+        "constraintsDigest": "sha256:2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a",
+        "definitionDigest": "sha256:2828282828282828282828282828282828282828282828282828282828282828",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "durable",
+        "grant": {
+          "digest": "sha256:2929292929292929292929292929292929292929292929292929292929292929",
+          "grantId": "grant-records-write",
+          "revisionId": "grantrev-records-write-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 604800,
+          "required": true
+        },
+        "providerBindingRef": "table-provider"
+      }
+    ],
+    "checks": [
+      {
+        "code": "RR_BINDINGS_VALID",
+        "detailsDigest": null,
+        "id": "binding-integrity",
+        "status": "pass",
+        "subjectRef": "release"
+      },
+      {
+        "code": "RR_TESTS_VALID",
+        "detailsDigest": "sha256:2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f",
+        "id": "release-tests",
+        "status": "pass",
+        "subjectRef": "validation-set-monitor-012"
+      }
+    ],
+    "configuration": {
+      "revisionId": "cfg-monitor-007",
+      "schemaDigest": "sha256:0808080808080808080808080808080808080808080808080808080808080808",
+      "valuesDigest": "sha256:0707070707070707070707070707070707070707070707070707070707070707"
+    },
+    "connectionBindings": [
+      {
+        "authorizationRevisionId": "connrev-source-browser-005",
+        "availability": "connected",
+        "connectionId": "conn-source-browser",
+        "connectionRef": "source-browser",
+        "connector": "browser.profile",
+        "grantedScopes": [
+          "session.use"
+        ],
+        "onUnavailableResolved": "use-unconnected-mode",
+        "providerBindingRef": "browser-provider"
+      },
+      {
+        "authorizationRevisionId": "connrev-workspace-notifications-002",
+        "availability": "connected",
+        "connectionId": "conn-workspace-notifications",
+        "connectionRef": "workspace-notifications",
+        "connector": "notification.workspace",
+        "grantedScopes": [
+          "notification.send"
+        ],
+        "onUnavailableResolved": "disable-dependent-capabilities",
+        "providerBindingRef": "notification-provider"
+      }
+    ],
+    "contextBindings": [],
+    "entrypointBindings": [
+      {
+        "authorityProfile": {
+          "definitionDigest": "sha256:2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c",
+          "id": "run-authority",
+          "version": "0.1.0"
+        },
+        "capabilityBindingRefs": [
+          "browser-read",
+          "notification-send",
+          "records-read",
+          "records-write"
+        ],
+        "contextBindingRefs": [],
+        "disabledReasons": [],
+        "effectiveExecution": {
+          "budgets": {
+            "browserSeconds": 900,
+            "capabilityCalls": 5000,
+            "costMicrousd": 20000000,
+            "modelCalls": 100
+          },
+          "concurrency": {
+            "maxParallel": 1,
+            "mode": "singleton"
+          },
+          "retry": {
+            "baseDelaySeconds": 10,
+            "maxAttempts": 3,
+            "strategy": "exponential"
+          },
+          "timeoutSeconds": 1200
+        },
+        "enabled": true,
+        "entrypointRef": "refresh-records",
+        "executionClosureDigest": "sha256:2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "resourceBindings": [
+          {
+            "modes": [
+              "append",
+              "read",
+              "write"
+            ],
+            "resourceRef": "monitored-records"
+          }
+        ],
+        "runtimeServiceBindingRef": "python-runner"
+      },
+      {
+        "authorityProfile": {
+          "definitionDigest": "sha256:2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c",
+          "id": "run-authority",
+          "version": "0.1.0"
+        },
+        "capabilityBindingRefs": [
+          "records-read"
+        ],
+        "contextBindingRefs": [],
+        "disabledReasons": [],
+        "effectiveExecution": {
+          "budgets": {
+            "browserSeconds": 0,
+            "capabilityCalls": 100,
+            "costMicrousd": 100000,
+            "modelCalls": 0
+          },
+          "concurrency": {
+            "maxParallel": 50,
+            "mode": "parallel"
+          },
+          "retry": {
+            "baseDelaySeconds": null,
+            "maxAttempts": 1,
+            "strategy": "none"
+          },
+          "timeoutSeconds": 30
+        },
+        "enabled": true,
+        "entrypointRef": "search-records",
+        "executionClosureDigest": "sha256:2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d",
+        "resourceBindings": [
+          {
+            "modes": [
+              "read"
+            ],
+            "resourceRef": "monitored-records"
+          }
+        ],
+        "runtimeServiceBindingRef": "python-runner"
+      }
+    ],
+    "resourceBindings": [
+      {
+        "allowedModes": [
+          "append",
+          "read",
+          "write"
+        ],
+        "classification": "internal",
+        "kind": "table",
+        "resourceBindingRevisionId": "resrev-monitored-records-003",
+        "resourceId": "res-monitored-records",
+        "resourceRef": "monitored-records",
+        "schemaDigest": "sha256:1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e",
+        "schemaVersion": "1.0.0",
+        "serviceBindingRef": "table-provider"
+      }
+    ],
+    "scheduleBindings": [
+      {
+        "disabledReason": null,
+        "enabled": true,
+        "entrypointRef": "refresh-records",
+        "settingsDigest": "sha256:2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e",
+        "settingsRevisionId": "sched-weekly-refresh-003",
+        "timezone": "Europe/London",
+        "triggerRef": "weekly-refresh"
+      }
+    ],
+    "serviceBindings": [
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:0909090909090909090909090909090909090909090909090909090909090909",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+          "id": "workspace-internal",
+          "version": "0.1.0"
+        },
+        "id": "app-ui-bridge",
+        "interface": "platform.app-ui-bridge/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "platform-app-ui-bridge",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": "pcfg-browser-002",
+        "definitionDigest": "sha256:0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+          "id": "isolated-browser",
+          "version": "0.1.0"
+        },
+        "id": "browser-provider",
+        "interface": "platform.connector.browser-profile/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "cloud-browser-provider",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "id": "regional-ha",
+          "version": "0.1.0"
+        },
+        "id": "capability-broker",
+        "interface": "platform.capability-broker/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "platform-capability-broker",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:1212121212121212121212121212121212121212121212121212121212121212",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1414141414141414141414141414141414141414141414141414141414141414",
+          "id": "workspace-internal",
+          "version": "0.1.0"
+        },
+        "id": "native-ui-host",
+        "interface": "platform.ui.native-host/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "platform-native-ui",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:1515151515151515151515151515151515151515151515151515151515151515",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1717171717171717171717171717171717171717171717171717171717171717",
+          "id": "workspace-internal",
+          "version": "0.1.0"
+        },
+        "id": "notification-provider",
+        "interface": "platform.connector.workspace-notification/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "workspace-notification-provider",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:1818181818181818181818181818181818181818181818181818181818181818",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a",
+          "id": "standard-isolated",
+          "version": "0.1.0"
+        },
+        "id": "python-runner",
+        "interface": "platform.runner.python/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "cloud-python-runner",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d",
+          "id": "workspace-shared-isolated-schema",
+          "version": "0.1.0"
+        },
+        "id": "table-provider",
+        "interface": "platform.resource.table/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "managed-postgres-table",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      }
+    ],
+    "status": "ready",
+    "webhookBindings": []
+  }
+}

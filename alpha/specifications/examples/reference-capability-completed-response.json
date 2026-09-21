@@ -1,0 +1,67 @@
+{
+  "apiVersion": "alpha.platform.capability/v0.1",
+  "kind": "CapabilityResponse",
+  "metadata": {
+    "callId": "call-email-send-0001",
+    "operationId": "capop-email-send-0001",
+    "runId": "run-send-approved-0001",
+    "capabilityRef": "email-send"
+  },
+  "status": "completed",
+  "result": {
+    "messageId": "msg-provider-0088",
+    "accepted": true
+  },
+  "pendingApproval": null,
+  "error": null,
+  "receipt": {
+    "releaseResolutionDigest": "sha256:7070707070707070707070707070707070707070707070707070707070707070",
+    "capabilityDefinitionDigest": "sha256:5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e",
+    "resultDigest": "sha256:7474747474747474747474747474747474747474747474747474747474747474",
+    "providerBindingRef": "email-provider",
+    "connectionBindingRef": "work-email",
+    "policyDecisionId": "poldec-email-send-0001",
+    "approvalDecisionIds": [
+      "aprdec-email-send-0001"
+    ],
+    "idempotency": {
+      "keyDigest": "sha256:7272727272727272727272727272727272727272727272727272727272727272",
+      "replayed": false
+    },
+    "budget": {
+      "reservationId": "budgetres-email-send-0001",
+      "reserved": {
+        "modelCalls": 0,
+        "browserSeconds": 0,
+        "capabilityCalls": 1,
+        "costMicrousd": 10000
+      },
+      "charged": {
+        "modelCalls": 0,
+        "browserSeconds": 0,
+        "capabilityCalls": 1,
+        "costMicrousd": 2000
+      }
+    },
+    "evidenceRefs": [
+      "evidence-email-provider-receipt-0001"
+    ],
+    "auditEventRefs": [
+      "event-capability-requested-0001",
+      "event-approval-requested-0001",
+      "event-approval-decided-0001",
+      "event-capability-completed-0001"
+    ],
+    "receivedAt": "2026-09-16T12:00:00Z",
+    "completedAt": "2026-09-16T12:02:03Z",
+    "authorizationDigest": "sha256:7171717171717171717171717171717171717171717171717171717171717171",
+    "effectDigest": "sha256:7272727272727272727272727272727272727272727272727272727272727272",
+    "executionMode": "durable",
+    "providerExecution": {
+      "providerId": "workspace-email-adapter",
+      "deploymentId": "email-adapter-eu1-2026-09-16",
+      "implementationDigest": "sha256:4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f",
+      "credentialGenerationAuditRef": "credgen-audit-work-email-2026-09-16"
+    }
+  }
+}

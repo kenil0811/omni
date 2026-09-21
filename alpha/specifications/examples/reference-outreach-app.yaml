@@ -1,0 +1,303 @@
+apiVersion: alpha.platform/v0.1
+kind: AppManifest
+
+metadata:
+  name: assisted-outreach
+  displayName: Assisted Outreach
+  description: Research configured prospects, prepare personalized drafts, and send only messages explicitly approved by a Workspace member.
+  labels:
+    fixture: approval-gated-outreach
+
+spec:
+  compatibility:
+    sdk: ">=0.1 <0.2"
+
+  configuration:
+    schema: schemas/config.schema.json
+    uiSchema: ui/config.ui.json
+
+  components:
+    - id: outreach-worker
+      kind: handler-bundle
+      source: components/backend.tar.zst
+      dependencyLock: components/backend.lock.json
+
+    - id: drafting-agent
+      kind: agent
+      source: agents/drafting.yaml
+
+    - id: outreach-view
+      kind: native-view
+      source: ui/outreach.yaml
+
+  surfaces:
+    - id: outreach
+      kind: native-page
+      componentRef: outreach-view
+      title: Outreach
+      route: /
+      entrypointRefs:
+        - research-prospects
+        - draft-messages
+        - send-approved
+      resourceRefs:
+        - prospects
+        - drafts
+
+  entrypoints:
+    - id: research-prospects
+      kind: job
+      componentRef: outreach-worker
+      handler: handlers.research_prospects
+      inputSchema: schemas/research-input.schema.json
+      outputSchema: schemas/research-output.schema.json
+      invocation:
+        - ui
+        - manual
+      capabilities:
+        - browser-read
+        - prospects-read
+        - prospects-write
+      resourceAccess:
+        - resourceRef: prospects
+          modes:
+            - read
+            - append
+            - write
+      execution:
+        timeoutSeconds: 900
+        concurrency:
+          mode: singleton
+        budgets:
+          browserSeconds: 600
+          capabilityCalls: 3000
+          costMicrousd: 10000000
+      idempotency:
+        mode: caller-key
+        keyPointer: /researchBatchId
+      outcome:
+        evaluatorRefs:
+          - research-outcome
+        humanReview: on-low-confidence
+
+    - id: draft-messages
+      kind: action
+      componentRef: drafting-agent
+      handler: agents.draft_messages
+      inputSchema: schemas/draft-input.schema.json
+      outputSchema: schemas/draft-output.schema.json
+      invocation:
+        - ui
+        - chat
+      capabilities:
+        - prospects-read
+        - drafts-read
+        - drafts-write
+        - model-generate
+      resourceAccess:
+        - resourceRef: prospects
+          modes:
+            - read
+        - resourceRef: drafts
+          modes:
+            - read
+            - append
+            - write
+      context:
+        - writing-preferences
+        - company-guidelines
+      execution:
+        timeoutSeconds: 300
+        budgets:
+          modelCalls: 50
+          capabilityCalls: 500
+          costMicrousd: 5000000
+      idempotency:
+        mode: caller-key
+        keyPointer: /draftBatchId
+      outcome:
+        evaluatorRefs:
+          - draft-outcome
+        humanReview: always
+
+    - id: send-approved
+      kind: action
+      componentRef: outreach-worker
+      handler: handlers.send_approved
+      inputSchema: schemas/send-input.schema.json
+      outputSchema: schemas/send-output.schema.json
+      invocation:
+        - ui
+      capabilities:
+        - drafts-read
+        - drafts-write
+        - email-send
+      resourceAccess:
+        - resourceRef: drafts
+          modes:
+            - read
+            - write
+      execution:
+        timeoutSeconds: 120
+        concurrency:
+          mode: singleton
+        budgets:
+          capabilityCalls: 100
+          costMicrousd: 1000000
+      idempotency:
+        mode: caller-key
+        keyPointer: /approvalId
+      outcome:
+        evaluatorRefs:
+          - send-outcome
+        humanReview: on-failure
+
+  resources:
+    - id: prospects
+      kind: table
+      schemaRef: schemas/prospect.schema.json
+      schemaVersion: 1.0.0
+      classificationHint: confidential
+
+    - id: drafts
+      kind: table
+      schemaRef: schemas/draft.schema.json
+      schemaVersion: 1.0.0
+      classificationHint: confidential
+
+  connections:
+    - id: source-browser
+      connector: browser.profile
+      onUnavailable: use-unconnected-mode
+      scopes:
+        - session.use
+      purpose: Use approved signed-in research sources when available.
+
+    - id: work-email
+      connector: email.account
+      onUnavailable: disable-dependent-entrypoints
+      scopes:
+        - email.send
+      purpose: Send only drafts approved by a Workspace member.
+
+  capabilities:
+    - id: browser-read
+      capability: browser.navigate
+      connectionRef: source-browser
+      purpose: Visit configured research sources.
+      constraints:
+        domainSource: /sources/*/domain
+        methods:
+          - GET
+
+    - id: prospects-read
+      capability: data.table.read
+      purpose: Read prospects owned by this App.
+      constraints:
+        resourceRefs:
+          - prospects
+
+    - id: prospects-write
+      capability: data.table.write
+      purpose: Add or update prospect research.
+      constraints:
+        resourceRefs:
+          - prospects
+        operations:
+          - insert
+          - update
+
+    - id: drafts-read
+      capability: data.table.read
+      purpose: Read message drafts owned by this App.
+      constraints:
+        resourceRefs:
+          - drafts
+
+    - id: drafts-write
+      capability: data.table.write
+      purpose: Create and update message drafts.
+      constraints:
+        resourceRefs:
+          - drafts
+        operations:
+          - insert
+          - update
+
+    - id: model-generate
+      capability: model.generate
+      purpose: Generate personalized message drafts from approved prospect evidence and Context.
+      constraints:
+        maximumCallsPerRun: 50
+
+    - id: email-send
+      capability: communication.email.send
+      connectionRef: work-email
+      purpose: Send a user-approved message through the connected work email account.
+      constraints:
+        maximumRecipientsPerRequest: 1
+        maximumPerRun: 20
+
+  context:
+    - id: writing-preferences
+      scope: user
+      selector: preferences.writing
+      purpose: Apply the user's writing style to draft messages.
+      required: false
+
+    - id: company-guidelines
+      scope: workspace
+      selector: communications.outreach-guidelines
+      purpose: Follow approved company language and outreach rules.
+      required: false
+      maxAgeSeconds: 2592000
+
+  policies:
+    approvalRequests:
+      - capabilityRef: email-send
+        mode: always
+
+  observability:
+    evidence:
+      capture:
+        - inputs
+        - outputs
+        - capability-results
+      redactPaths:
+        - /recipient/email
+
+  tests:
+    - id: ranking-unit
+      kind: unit
+      requiredFor:
+        - build
+      command: pytest tests/test_ranking.py
+
+    - id: research-outcome
+      kind: outcome
+      requiredFor:
+        - preview
+        - release
+      fixture: tests/research.fixture.json
+      evaluator: evaluators.research_outcome
+
+    - id: draft-outcome
+      kind: outcome
+      requiredFor:
+        - preview
+        - release
+      fixture: tests/drafts.fixture.json
+      evaluator: evaluators.draft_outcome
+
+    - id: send-outcome
+      kind: outcome
+      requiredFor:
+        - release
+      fixture: tests/send.fixture.json
+      evaluator: evaluators.send_outcome
+
+    - id: outreach-health
+      kind: health
+      requiredFor:
+        - release
+      evaluator: evaluators.outreach_health

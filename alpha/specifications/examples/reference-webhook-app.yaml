@@ -1,0 +1,110 @@
+apiVersion: alpha.platform/v0.1
+kind: AppManifest
+
+metadata:
+  name: authenticated-event-capture
+  displayName: Authenticated Event Capture
+  description: Receive a verified provider event, retain its normalized record, and expose the resulting Run through platform Activity.
+  labels:
+    fixture: authenticated-webhook
+
+spec:
+  compatibility:
+    sdk: ">=0.1 <0.2"
+
+  components:
+    - id: event-worker
+      kind: handler-bundle
+      source: components/backend.tar.zst
+      dependencyLock: components/backend.lock.json
+
+  entrypoints:
+    - id: process-provider-event
+      kind: job
+      componentRef: event-worker
+      handler: handlers.process_provider_event
+      inputSchema: schemas/normalized-provider-event.schema.json
+      outputSchema: schemas/provider-event-result.schema.json
+      invocation:
+        - webhook
+      capabilities:
+        - events-write
+      resourceAccess:
+        - resourceRef: received-events
+          modes:
+            - append
+      execution:
+        timeoutSeconds: 120
+        retry:
+          maxAttempts: 3
+          strategy: exponential
+          baseDelaySeconds: 5
+        concurrency:
+          mode: parallel
+          maxParallel: 20
+        budgets:
+          modelCalls: 0
+          browserSeconds: 0
+          capabilityCalls: 20
+          costMicrousd: 100000
+      idempotency:
+        mode: occurrence-key
+      outcome:
+        evaluatorRefs:
+          - event-fixture
+        humanReview: on-failure
+
+  triggers:
+    - id: provider-event
+      kind: webhook
+      entrypointRef: process-provider-event
+      purpose: Start one durable Run only after the platform verifies and validates a provider event.
+      payloadSchema: schemas/provider-webhook-payload.schema.json
+      normalization:
+        mode: declarative
+        mappingRef: mappings/provider-event.mapping.json
+      methods:
+        - POST
+      acceptedMediaTypes:
+        - application/json
+      verification:
+        verifier: webhook.hmac-sha256
+        connectionRef: provider-webhook-secret
+      limits:
+        maxPayloadBytes: 262144
+        maxEventsPerMinute: 120
+        deduplicationWindowSeconds: 604800
+
+  resources:
+    - id: received-events
+      kind: table
+      schemaRef: schemas/received-event-record.schema.json
+      schemaVersion: 1.0.0
+      classificationHint: internal
+
+  connections:
+    - id: provider-webhook-secret
+      connector: webhook.shared-secret
+      onUnavailable: disable-dependent-entrypoints
+      scopes:
+        - webhook.verify
+      purpose: Verify that inbound events were signed by the configured provider.
+
+  capabilities:
+    - id: events-write
+      capability: data.table.write
+      purpose: Retain the normalized event after trusted ingress verification.
+      constraints:
+        resourceRefs:
+          - received-events
+        operations:
+          - insert
+
+  tests:
+    - id: event-fixture
+      kind: fixture
+      requiredFor:
+        - preview
+        - release
+      fixture: tests/provider-event.fixture.json
+      evaluator: evaluators.provider_event_fixture

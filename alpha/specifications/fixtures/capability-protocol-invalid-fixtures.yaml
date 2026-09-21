@@ -1,0 +1,119 @@
+fixtureVersion: alpha.platform/capability-protocol-invalid-fixtures/v1
+description: Mutations applied to the reference Capability records to verify identity, authority, approval, idempotency, budget, result, and secret-handling failures.
+
+cases:
+  - id: unknown-request-field
+    base: ../examples/reference-capability-request.json
+    patch:
+      - op: add
+        path: /directProviderEndpoint
+        value: https://provider.internal
+    expectedError: CP_INPUT_SCHEMA_INVALID
+    phase: schema
+
+  - id: authority-release-mismatch
+    base: ../examples/reference-capability-request.json
+    patch:
+      - op: replace
+        path: /authority/releaseResolutionDigest
+        value: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    expectedError: CP_AUTHORITY_MISMATCH
+    phase: authorization
+
+  - id: capability-outside-entrypoint-closure
+    base: ../examples/reference-capability-request.json
+    patch:
+      - op: replace
+        path: /authority/capabilityRef
+        value: browser-read
+    expectedError: CP_CAPABILITY_NOT_IN_CLOSURE
+    phase: authorization
+
+  - id: effectful-request-without-idempotency
+    base: ../examples/reference-capability-request.json
+    patch:
+      - op: replace
+        path: /idempotency
+        value: null
+    expectedError: CP_IDEMPOTENCY_KEY_REQUIRED
+    phase: semantic
+
+  - id: duplicate-key-different-effect
+    base: ../examples/reference-capability-request.json
+    mutation: Reuse the same scoped key after changing the recipient.
+    expectedError: CP_IDEMPOTENCY_CONFLICT
+    phase: idempotency
+
+  - id: always-approval-requests-binding-scope
+    base: ../examples/reference-capability-approval-request.json
+    patch:
+      - op: replace
+        path: /spec/requestedScope
+        value: binding
+    expectedError: CP_INPUT_SCHEMA_INVALID
+    phase: schema
+
+  - id: approval-decision-effect-digest-mismatch
+    base: ../examples/reference-capability-approval-decision.json
+    patch:
+      - op: replace
+        path: /spec/effectDigest
+        value: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    expectedError: CP_APPROVAL_DENIED
+    phase: approval
+
+  - id: pending-response-with-error
+    base: ../examples/reference-capability-pending-response.json
+    patch:
+      - op: replace
+        path: /error
+        value:
+          code: CP_INTERNAL
+          message: invalid mixed response
+          retryable: false
+          phase: internal
+          detailsRef: null
+    expectedError: CP_INPUT_SCHEMA_INVALID
+    phase: schema
+
+  - id: failed-response-with-result
+    base: ../examples/reference-capability-completed-response.json
+    patch:
+      - op: replace
+        path: /status
+        value: failed
+    expectedError: CP_INPUT_SCHEMA_INVALID
+    phase: schema
+
+  - id: provider-result-does-not-match-definition
+    base: ../examples/reference-capability-completed-response.json
+    mutation: Replace the typed email result with an unrecognized provider payload.
+    expectedError: CP_PROVIDER_RESULT_INVALID
+    phase: result-validation
+
+  - id: budget-reservation-exceeds-run-balance
+    base: ../examples/reference-capability-request.json
+    mutation: Attempt to reserve more cost than remains in the Run projection.
+    expectedError: CP_BUDGET_EXCEEDED
+    phase: budget
+
+  - id: inline-operation-requires-approval
+    base: ../examples/reference-capability-request.json
+    mutation: Bind the Capability as inline while current restrictive policy requires approval.
+    expectedError: CP_EXECUTION_MODE_MISMATCH
+    phase: policy
+
+  - id: execution-starts-after-execute-before
+    base: ../examples/reference-capability-request.json
+    mutation: Begin provider execution after the request executeBefore instant.
+    expectedError: CP_EXECUTE_BEFORE_EXCEEDED
+    phase: provider
+
+  - id: credential-in-response
+    base: ../examples/reference-capability-completed-response.json
+    patch:
+      - op: add
+        path: /result/accessToken
+        value: secret-token-value
+    expectedError: CP_PROVIDER_RESULT_INVALID
+    phase: result-validation

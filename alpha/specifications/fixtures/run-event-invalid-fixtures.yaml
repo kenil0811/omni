@@ -1,0 +1,103 @@
+fixtureVersion: alpha.platform/run-event-invalid-fixtures/v3
+description: Mutations applied to ../examples/reference-run-events.jsonl to verify structure, ordering, state, authority, approval, budget, result, and secret-handling failures.
+
+cases:
+  - id: unknown-event-field
+    baseSequence: 1
+    patch:
+      - op: add
+        path: /rawToken
+        value: prohibited
+    expectedError: RE_SCHEMA_INVALID
+    phase: schema
+
+  - id: source-event-conflict
+    baseSequence: 3
+    mutation: Reuse the same service and sourceEventId with a different canonical payload.
+    expectedError: RE_SOURCE_EVENT_CONFLICT
+    phase: ingestion
+
+  - id: sequence-not-increasing
+    baseSequence: 4
+    patch:
+      - op: replace
+        path: /sequence
+        value: 3
+    expectedError: RE_SEQUENCE_INVALID
+    phase: ordering
+
+  - id: invalid-state-transition
+    baseSequence: 14
+    patch:
+      - op: replace
+        path: /payload/from
+        value: queued
+    expectedError: RE_STATE_TRANSITION_INVALID
+    phase: state
+
+  - id: event-after-terminal
+    baseSequence: 3
+    mutation: Append this execution milestone after the terminal succeeded Event.
+    expectedError: RE_TERMINAL_RUN_CLOSED
+    phase: state
+
+  - id: human-input-response-without-request
+    mutation: Emit human-input.received without one active matching human-input.requested Event.
+    expectedError: RE_HUMAN_INPUT_MISMATCH
+    phase: input
+
+  - id: capability-outside-run-projection
+    baseSequence: 4
+    patch:
+      - op: replace
+        path: /payload/capabilityRef
+        value: undeclared-capability
+    expectedError: RE_REFERENCE_OUTSIDE_PROJECTION
+    phase: authority
+
+  - id: approval-effect-mismatch
+    baseSequence: 8
+    patch:
+      - op: replace
+        path: /payload/effectDigest
+        value: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    expectedError: RE_APPROVAL_MISMATCH
+    phase: approval
+
+  - id: negative-budget-balance
+    baseSequence: 11
+    patch:
+      - op: replace
+        path: /payload/remaining
+        value: -1
+    expectedError: RE_SCHEMA_INVALID
+    phase: schema
+
+  - id: budget-exceeds-run-balance
+    baseSequence: 5
+    patch:
+      - op: replace
+        path: /payload/amount
+        value: 11
+    expectedError: RE_BUDGET_INVALID
+    phase: budget
+
+  - id: context-revision-outside-binding
+    mutation: Emit context.selected for a Context Source absent from the Run projection.
+    expectedError: RE_REFERENCE_OUTSIDE_PROJECTION
+    phase: authority
+
+  - id: related-run-crosses-workspace
+    mutation: Emit run.related for a Run owned by another Workspace.
+    expectedError: RE_REFERENCE_OUTSIDE_PROJECTION
+    phase: relationship
+
+  - id: redundant-parent-of-relationship
+    mutation: Emit run.related with the deprecated parent-of relationship instead of deriving the reverse view from child-of.
+    expectedError: RE_SCHEMA_INVALID
+    phase: schema
+
+  - id: credential-material-in-error
+    mutation: Put a provider access token in run.error safeMessage.
+    expectedError: RE_SECRET_MATERIAL_REJECTED
+    phase: security

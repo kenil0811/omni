@@ -1,0 +1,39 @@
+fixtureVersion: alpha.platform/package-invalid-fixtures/v1
+description: Package-tree or package-index mutations applied to the reference package to verify safe extraction, inventory, dependency, and integrity failures.
+
+cases:
+  - id: builder-owned-resolved-manifest
+    mutation: Add app.resolved.json to the Source App Package before compilation.
+    expectedError: PKG_RESERVED_PATH
+    phase: ingress
+
+  - id: symbolic-link-escape
+    mutation: Add assets/current as a symbolic link to a path outside the package root.
+    expectedError: PKG_LINK_FORBIDDEN
+    phase: ingress
+
+  - id: case-folding-collision
+    mutation: Add schemas/Record.schema.json beside schemas/record.schema.json.
+    expectedError: PKG_CASE_COLLISION
+    phase: ingress
+
+  - id: unreferenced-executable
+    mutation: Add components/hidden.py without a declaration or reachable import.
+    expectedError: PKG_FILE_UNREACHABLE
+    phase: reachability
+
+  - id: mutable-dependency
+    mutation: Replace one locked dependency with a Git branch reference.
+    expectedError: PKG_DEPENDENCY_UNLOCKED
+    phase: dependency
+
+  - id: package-index-file-missing
+    mutation: Remove ui/records.yaml from package.index.json while retaining it in the sealed tree.
+    expectedError: PKG_INDEX_INVALID
+    phase: seal
+
+  - id: component-digest-mismatch
+    mutation: Change the indexed digest for components/backend.tar.zst without changing its bytes.
+    expectedError: PKG_DIGEST_MISMATCH
+    phase: seal
+

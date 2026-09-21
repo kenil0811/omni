@@ -1,0 +1,459 @@
+{
+  "apiVersion": "alpha.platform.release/v0.1",
+  "kind": "ReleaseResolutionRecord",
+  "metadata": {
+    "appId": "app-invoice-reconciliation",
+    "appVersionId": "aver-invoice-reconciliation-005",
+    "environment": "active",
+    "packageDigest": "sha256:9191919191919191919191919191919191919191919191919191919191919191",
+    "releaseId": "rel-invoice-reconciliation-active",
+    "releaseRevisionId": "rrev-invoice-reconciliation-002",
+    "resolvedManifestDigest": "sha256:9090909090909090909090909090909090909090909090909090909090909090",
+    "workspaceId": "wsp-alpha-demo"
+  },
+  "resolution": {
+    "inputDigest": "sha256:9292929292929292929292929292929292929292929292929292929292929292",
+    "policy": {
+      "digest": "sha256:0505050505050505050505050505050505050505050505050505050505050505",
+      "snapshotId": "policy-wsp-alpha-active-004"
+    },
+    "registry": {
+      "digest": "sha256:0404040404040404040404040404040404040404040404040404040404040404",
+      "snapshotId": "registry-2026-09-16.1"
+    },
+    "resolver": {
+      "digest": "sha256:0303030303030303030303030303030303030303030303030303030303030303",
+      "id": "platform.release-resolver",
+      "version": "0.1.0"
+    }
+  },
+  "spec": {
+    "deployment": {
+      "target": "local",
+      "persistentStateLocation": "device",
+      "defaultExecutionLocation": "device",
+      "scheduleAuthority": "device",
+      "availability": "while-device-runtime-available"
+    },
+    "capabilityBindings": [
+      {
+        "approval": {
+          "mode": "never",
+          "provenance": [
+            "registry-minimum"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "data.table.read",
+        "capabilityRef": "exceptions-read",
+        "connectionBindingRef": null,
+        "constraints": {
+          "resourceRefs": [
+            "exceptions"
+          ]
+        },
+        "constraintsDigest": "sha256:3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d",
+        "definitionDigest": "sha256:2525252525252525252525252525252525252525252525252525252525252525",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "inline",
+        "grant": {
+          "digest": "sha256:3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c",
+          "grantId": "grant-exceptions-read",
+          "revisionId": "grantrev-exceptions-read-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 86400,
+          "required": false
+        },
+        "providerBindingRef": "table-provider"
+      },
+      {
+        "approval": {
+          "mode": "never",
+          "provenance": [
+            "registry-minimum"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "data.table.write",
+        "capabilityRef": "exceptions-write",
+        "connectionBindingRef": null,
+        "constraints": {
+          "operations": [
+            "insert",
+            "update"
+          ],
+          "resourceRefs": [
+            "exceptions"
+          ]
+        },
+        "constraintsDigest": "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "definitionDigest": "sha256:2828282828282828282828282828282828282828282828282828282828282828",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "durable",
+        "grant": {
+          "digest": "sha256:3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e",
+          "grantId": "grant-exceptions-write",
+          "revisionId": "grantrev-exceptions-write-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 604800,
+          "required": true
+        },
+        "providerBindingRef": "table-provider"
+      },
+      {
+        "approval": {
+          "mode": "never",
+          "provenance": [
+            "registry-minimum"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "data.files.read",
+        "capabilityRef": "files-read",
+        "connectionBindingRef": null,
+        "constraints": {
+          "resourceRefs": [
+            "source-files"
+          ]
+        },
+        "constraintsDigest": "sha256:4242424242424242424242424242424242424242424242424242424242424242",
+        "definitionDigest": "sha256:4040404040404040404040404040404040404040404040404040404040404040",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "durable",
+        "grant": {
+          "digest": "sha256:4141414141414141414141414141414141414141414141414141414141414141",
+          "grantId": "grant-files-read",
+          "revisionId": "grantrev-files-read-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 86400,
+          "required": false
+        },
+        "providerBindingRef": "file-provider"
+      }
+    ],
+    "checks": [
+      {
+        "code": "RR_BINDINGS_VALID",
+        "detailsDigest": null,
+        "id": "binding-integrity",
+        "status": "pass",
+        "subjectRef": "release"
+      },
+      {
+        "code": "RR_TESTS_VALID",
+        "detailsDigest": "sha256:4545454545454545454545454545454545454545454545454545454545454545",
+        "id": "release-tests",
+        "status": "pass",
+        "subjectRef": "validation-set-reconciliation-004"
+      }
+    ],
+    "configuration": {
+      "revisionId": "cfg-reconciliation-002",
+      "schemaDigest": "sha256:3434343434343434343434343434343434343434343434343434343434343434",
+      "valuesDigest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    "connectionBindings": [],
+    "contextBindings": [],
+    "entrypointBindings": [
+      {
+        "authorityProfile": {
+          "definitionDigest": "sha256:2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c",
+          "id": "run-authority",
+          "version": "0.1.0"
+        },
+        "capabilityBindingRefs": [
+          "exceptions-read",
+          "exceptions-write",
+          "files-read"
+        ],
+        "contextBindingRefs": [],
+        "disabledReasons": [],
+        "effectiveExecution": {
+          "budgets": {
+            "browserSeconds": 0,
+            "capabilityCalls": 2000,
+            "costMicrousd": 5000000,
+            "modelCalls": 0
+          },
+          "concurrency": {
+            "maxParallel": 5,
+            "mode": "parallel"
+          },
+          "retry": {
+            "baseDelaySeconds": 5,
+            "maxAttempts": 2,
+            "strategy": "fixed"
+          },
+          "timeoutSeconds": 600
+        },
+        "enabled": true,
+        "entrypointRef": "process-files",
+        "executionClosureDigest": "sha256:4343434343434343434343434343434343434343434343434343434343434343",
+        "resourceBindings": [
+          {
+            "modes": [
+              "append",
+              "read",
+              "write"
+            ],
+            "resourceRef": "exceptions"
+          },
+          {
+            "modes": [
+              "read"
+            ],
+            "resourceRef": "source-files"
+          }
+        ],
+        "runtimeServiceBindingRef": "python-runner"
+      },
+      {
+        "authorityProfile": {
+          "definitionDigest": "sha256:2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c",
+          "id": "run-authority",
+          "version": "0.1.0"
+        },
+        "capabilityBindingRefs": [
+          "exceptions-read"
+        ],
+        "contextBindingRefs": [],
+        "disabledReasons": [],
+        "effectiveExecution": {
+          "budgets": {
+            "browserSeconds": 0,
+            "capabilityCalls": 100,
+            "costMicrousd": 100000,
+            "modelCalls": 0
+          },
+          "concurrency": {
+            "maxParallel": 1,
+            "mode": "singleton"
+          },
+          "retry": {
+            "baseDelaySeconds": null,
+            "maxAttempts": 1,
+            "strategy": "none"
+          },
+          "timeoutSeconds": 30
+        },
+        "enabled": true,
+        "entrypointRef": "search-exceptions",
+        "executionClosureDigest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+        "resourceBindings": [
+          {
+            "modes": [
+              "read"
+            ],
+            "resourceRef": "exceptions"
+          }
+        ],
+        "runtimeServiceBindingRef": "python-runner"
+      },
+      {
+        "authorityProfile": {
+          "definitionDigest": "sha256:2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c",
+          "id": "run-authority",
+          "version": "0.1.0"
+        },
+        "capabilityBindingRefs": [
+          "exceptions-read",
+          "exceptions-write"
+        ],
+        "contextBindingRefs": [],
+        "disabledReasons": [],
+        "effectiveExecution": {
+          "budgets": {
+            "browserSeconds": 0,
+            "capabilityCalls": 10,
+            "costMicrousd": 100000,
+            "modelCalls": 0
+          },
+          "concurrency": {
+            "maxParallel": 50,
+            "mode": "parallel"
+          },
+          "retry": {
+            "baseDelaySeconds": null,
+            "maxAttempts": 1,
+            "strategy": "none"
+          },
+          "timeoutSeconds": 30
+        },
+        "enabled": true,
+        "entrypointRef": "correct-exception",
+        "executionClosureDigest": "sha256:4646464646464646464646464646464646464646464646464646464646464646",
+        "resourceBindings": [
+          {
+            "modes": [
+              "read",
+              "write"
+            ],
+            "resourceRef": "exceptions"
+          }
+        ],
+        "runtimeServiceBindingRef": "python-runner"
+      }
+    ],
+    "resourceBindings": [
+      {
+        "allowedModes": [
+          "append",
+          "read",
+          "write"
+        ],
+        "classification": "confidential",
+        "kind": "table",
+        "resourceBindingRevisionId": "resrev-reconciliation-exceptions-002",
+        "resourceId": "res-reconciliation-exceptions",
+        "resourceRef": "exceptions",
+        "schemaDigest": "sha256:3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b",
+        "schemaVersion": "1.0.0",
+        "serviceBindingRef": "table-provider"
+      },
+      {
+        "allowedModes": [
+          "read"
+        ],
+        "classification": "confidential",
+        "kind": "file-store",
+        "resourceBindingRevisionId": "resrev-reconciliation-files-002",
+        "resourceId": "res-reconciliation-files",
+        "resourceRef": "source-files",
+        "schemaDigest": null,
+        "schemaVersion": "1.0.0",
+        "serviceBindingRef": "file-provider"
+      }
+    ],
+    "scheduleBindings": [],
+    "serviceBindings": [
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:0909090909090909090909090909090909090909090909090909090909090909",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+          "id": "workspace-internal",
+          "version": "0.1.0"
+        },
+        "id": "app-ui-bridge",
+        "interface": "platform.app-ui-bridge/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "platform-app-ui-bridge",
+          "policyProfile": "managed-standard",
+          "routingClass": "device-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "id": "local-core",
+          "version": "0.1.0"
+        },
+        "id": "capability-broker",
+        "interface": "platform.capability-broker/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "platform-capability-broker",
+          "policyProfile": "managed-standard",
+          "routingClass": "device-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:3535353535353535353535353535353535353535353535353535353535353535",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:3737373737373737373737373737373737373737373737373737373737373737",
+          "id": "local-encrypted-app-files",
+          "version": "0.1.0"
+        },
+        "id": "file-provider",
+        "interface": "platform.resource.file-store/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "local-file-store",
+          "policyProfile": "managed-standard",
+          "routingClass": "device-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:3838383838383838383838383838383838383838383838383838383838383838",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a",
+          "id": "local-isolated-webview",
+          "version": "0.1.0"
+        },
+        "id": "micro-frontend-host",
+        "interface": "platform.ui.micro-frontend-host/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "local-webview-host",
+          "policyProfile": "managed-standard",
+          "routingClass": "device-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:1818181818181818181818181818181818181818181818181818181818181818",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a",
+          "id": "local-managed-process",
+          "version": "0.1.0"
+        },
+        "id": "python-runner",
+        "interface": "platform.runner.python/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "local-managed-python-runner",
+          "policyProfile": "managed-standard",
+          "routingClass": "device-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d",
+          "id": "local-sqlite-workspace",
+          "version": "0.1.0"
+        },
+        "id": "table-provider",
+        "interface": "platform.resource.table/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "local-sqlite-table",
+          "policyProfile": "managed-standard",
+          "routingClass": "device-managed"
+        }
+      }
+    ],
+    "status": "ready",
+    "webhookBindings": []
+  }
+}

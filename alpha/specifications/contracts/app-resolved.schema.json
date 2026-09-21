@@ -1,0 +1,689 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:alpha:resolved-app-manifest:v0.1",
+  "title": "Alpha Resolved App Manifest v0.1 revision 4",
+  "description": "Accepted compiler-owned manifest for a portable sealed App Version, including authenticated webhook requirements and portable HTTP Action Profile candidates.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "resolution", "spec"],
+  "properties": {
+    "apiVersion": { "const": "alpha.platform.resolved/v0.1" },
+    "kind": { "const": "ResolvedAppManifest" },
+    "metadata": { "$ref": "#/$defs/metadata" },
+    "resolution": { "$ref": "#/$defs/resolution" },
+    "spec": { "$ref": "#/$defs/spec" }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,62}$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "packagePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "stringMap": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "maxLength": 256 }
+    },
+    "stringSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "nullableInteger": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "displayName", "description", "labels"],
+      "properties": {
+        "name": { "$ref": "#/$defs/identifier" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "description": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "labels": { "$ref": "#/$defs/stringMap" }
+      }
+    },
+    "compilerIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "digest"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "compiler", "registry", "source", "sdk"],
+      "properties": {
+        "contract": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["apiVersion", "revision"],
+          "properties": {
+            "apiVersion": { "const": "alpha.platform/v0.1" },
+            "revision": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "compiler": { "$ref": "#/$defs/compilerIdentity" },
+        "registry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["snapshotId", "digest"],
+          "properties": {
+            "snapshotId": { "type": "string", "minLength": 1 },
+            "digest": { "$ref": "#/$defs/digest" }
+          }
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["manifestPath", "manifestDigest", "fileSetDigest"],
+          "properties": {
+            "manifestPath": { "const": "app.yaml" },
+            "manifestDigest": { "$ref": "#/$defs/digest" },
+            "fileSetDigest": { "$ref": "#/$defs/digest" }
+          }
+        },
+        "sdk": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["requestedRange", "resolvedVersion", "interface", "definitionDigest"],
+          "properties": {
+            "requestedRange": { "type": "string", "minLength": 1 },
+            "resolvedVersion": { "type": "string", "minLength": 1 },
+            "interface": { "type": "string", "minLength": 1 },
+            "definitionDigest": { "$ref": "#/$defs/digest" }
+          }
+        }
+      }
+    },
+    "fileDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "mediaType", "sizeBytes", "digest"],
+      "properties": {
+        "path": { "$ref": "#/$defs/packagePath" },
+        "mediaType": { "type": "string", "minLength": 3 },
+        "sizeBytes": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "serviceRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["interface", "definitionDigest", "bindingPhase", "required", "onUnavailable", "reason"],
+      "properties": {
+        "interface": { "type": "string", "minLength": 1 },
+        "definitionDigest": { "$ref": "#/$defs/digest" },
+        "bindingPhase": { "enum": ["release", "run"] },
+        "required": { "type": "boolean" },
+        "onUnavailable": { "enum": ["fail", "degrade", "disable-entrypoint"] },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "configuration": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["schema", "uiSchema", "defaults"],
+          "properties": {
+            "schema": { "$ref": "#/$defs/fileDescriptor" },
+            "uiSchema": { "oneOf": [{ "$ref": "#/$defs/fileDescriptor" }, { "type": "null" }] },
+            "defaults": { "oneOf": [{ "$ref": "#/$defs/fileDescriptor" }, { "type": "null" }] }
+          }
+        }
+      ]
+    },
+    "runtimeProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "definitionDigest", "language", "languageVersion"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "definitionDigest": { "$ref": "#/$defs/digest" },
+        "language": { "enum": ["python", "typescript", "declarative"] },
+        "languageVersion": { "type": ["string", "null"] }
+      }
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "source", "dependencyLock", "artifact", "runtimeProfile", "serviceRequirements"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "kind": { "enum": ["handler-bundle", "agent", "native-view", "micro-frontend"] },
+        "source": { "$ref": "#/$defs/fileDescriptor" },
+        "dependencyLock": { "oneOf": [{ "$ref": "#/$defs/fileDescriptor" }, { "type": "null" }] },
+        "artifact": { "$ref": "#/$defs/fileDescriptor" },
+        "runtimeProfile": { "$ref": "#/$defs/runtimeProfile" },
+        "serviceRequirements": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/serviceRequirement" }
+        }
+      }
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "componentRef", "title", "route", "entrypointRefs", "resourceRefs", "componentArtifact", "appUiBridge"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "kind": { "enum": ["native-page", "micro-frontend"] },
+        "componentRef": { "$ref": "#/$defs/identifier" },
+        "title": { "type": "string", "minLength": 1 },
+        "route": { "type": "string", "pattern": "^/" },
+        "entrypointRefs": { "$ref": "#/$defs/stringSet" },
+        "resourceRefs": { "$ref": "#/$defs/stringSet" },
+        "componentArtifact": { "$ref": "#/$defs/fileDescriptor" },
+        "appUiBridge": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["interface", "definitionDigest"],
+          "properties": {
+            "interface": { "type": "string", "minLength": 1 },
+            "definitionDigest": { "$ref": "#/$defs/digest" }
+          }
+        }
+      }
+    },
+    "resourceAccess": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resourceRef", "modes"],
+      "properties": {
+        "resourceRef": { "$ref": "#/$defs/identifier" },
+        "modes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["read", "append", "write"] }
+        }
+      }
+    },
+    "retry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxAttempts", "strategy", "baseDelaySeconds"],
+      "properties": {
+        "maxAttempts": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "strategy": { "enum": ["none", "fixed", "exponential"] },
+        "baseDelaySeconds": { "$ref": "#/$defs/nullableInteger" }
+      }
+    },
+    "concurrency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "maxParallel"],
+      "properties": {
+        "mode": { "enum": ["singleton", "parallel"] },
+        "maxParallel": { "$ref": "#/$defs/nullableInteger" }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["modelCalls", "browserSeconds", "capabilityCalls", "costMicrousd"],
+      "properties": {
+        "modelCalls": { "$ref": "#/$defs/nullableInteger" },
+        "browserSeconds": { "$ref": "#/$defs/nullableInteger" },
+        "capabilityCalls": { "$ref": "#/$defs/nullableInteger" },
+        "costMicrousd": { "$ref": "#/$defs/nullableInteger" }
+      }
+    },
+    "minimumApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capabilityRef", "mode", "provenance"],
+      "properties": {
+        "capabilityRef": { "$ref": "#/$defs/identifier" },
+        "mode": { "enum": ["first-use", "always"] },
+        "provenance": { "enum": ["source-request", "registry-minimum", "source-and-registry"] }
+      }
+    },
+    "derived": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effectClasses", "riskClass", "minimumApprovals", "connectionRefs", "serviceInterfaces"],
+      "properties": {
+        "effectClasses": { "$ref": "#/$defs/stringSet" },
+        "riskClass": { "enum": ["none", "low", "moderate", "high", "critical"] },
+        "minimumApprovals": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/minimumApproval" }
+        },
+        "connectionRefs": { "$ref": "#/$defs/stringSet" },
+        "serviceInterfaces": { "$ref": "#/$defs/stringSet" }
+      }
+    },
+    "executionClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["componentRef", "artifactDigest", "fileDigests", "capabilityRefs", "resourceAccess", "connectionRefs", "contextRefs", "serviceInterfaces"],
+      "properties": {
+        "componentRef": { "$ref": "#/$defs/identifier" },
+        "artifactDigest": { "$ref": "#/$defs/digest" },
+        "fileDigests": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/digest" }
+        },
+        "capabilityRefs": { "$ref": "#/$defs/stringSet" },
+        "resourceAccess": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/resourceAccess" }
+        },
+        "connectionRefs": { "$ref": "#/$defs/stringSet" },
+        "contextRefs": { "$ref": "#/$defs/stringSet" },
+        "serviceInterfaces": { "$ref": "#/$defs/stringSet" }
+      }
+    },
+    "entrypoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "componentRef", "handler", "inputSchema", "outputSchema", "invocation", "capabilities", "resourceAccess", "context", "execution", "idempotency", "outcome", "derived", "executionClosure"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "kind": { "enum": ["action", "query", "job"] },
+        "componentRef": { "$ref": "#/$defs/identifier" },
+        "handler": { "type": "string", "minLength": 1 },
+        "inputSchema": { "$ref": "#/$defs/fileDescriptor" },
+        "outputSchema": { "$ref": "#/$defs/fileDescriptor" },
+        "invocation": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["ui", "chat", "manual", "schedule", "webhook"] }
+        },
+        "capabilities": { "$ref": "#/$defs/stringSet" },
+        "resourceAccess": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/resourceAccess" }
+        },
+        "context": { "$ref": "#/$defs/stringSet" },
+        "execution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["timeoutSeconds", "retry", "concurrency", "budgets"],
+          "properties": {
+            "timeoutSeconds": { "type": "integer", "minimum": 1, "maximum": 86400 },
+            "retry": { "$ref": "#/$defs/retry" },
+            "concurrency": { "$ref": "#/$defs/concurrency" },
+            "budgets": { "$ref": "#/$defs/budgets" }
+          }
+        },
+        "idempotency": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "keyPointer"],
+          "properties": {
+            "mode": { "enum": ["none", "caller-key", "occurrence-key"] },
+            "keyPointer": { "type": ["string", "null"] }
+          }
+        },
+        "outcome": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["evaluatorRefs", "humanReview"],
+          "properties": {
+            "evaluatorRefs": { "$ref": "#/$defs/stringSet" },
+            "humanReview": { "enum": ["never", "always", "on-failure", "on-low-confidence"] }
+          }
+        },
+        "derived": { "$ref": "#/$defs/derived" },
+        "executionClosure": { "$ref": "#/$defs/executionClosure" }
+      }
+    },
+    "scheduleTrigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "entrypointRef", "settingsSchema", "enabled"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "kind": { "const": "schedule" },
+        "entrypointRef": { "$ref": "#/$defs/identifier" },
+        "settingsSchema": { "$ref": "#/$defs/fileDescriptor" },
+        "enabled": { "const": false }
+      }
+    },
+    "webhookVerifierRegistry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "definitionVersion",
+        "definitionDigest",
+        "serviceInterface",
+        "timestampValidation",
+        "deliveryIdentityMode",
+        "sourceConstraintModes"
+      ],
+      "properties": {
+        "definitionVersion": { "type": "string", "minLength": 1 },
+        "definitionDigest": { "$ref": "#/$defs/digest" },
+        "serviceInterface": { "type": "string", "minLength": 1 },
+        "timestampValidation": { "enum": ["required", "optional"] },
+        "deliveryIdentityMode": {
+          "enum": ["provider-delivery-id", "signed-nonce", "payload-digest"]
+        },
+        "sourceConstraintModes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": ["network-set", "certificate-identity", "provider-account"] }
+        }
+      }
+    },
+    "webhookLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxPayloadBytes", "maxEventsPerMinute", "deduplicationWindowSeconds"],
+      "properties": {
+        "maxPayloadBytes": { "type": "integer", "minimum": 1, "maximum": 10485760 },
+        "maxEventsPerMinute": { "type": "integer", "minimum": 1, "maximum": 6000 },
+        "deduplicationWindowSeconds": { "type": "integer", "minimum": 300, "maximum": 2592000 }
+      }
+    },
+    "webhookNormalization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "mapping", "outputSchemaDigest"],
+      "properties": {
+        "mode": { "enum": ["identity", "declarative"] },
+        "mapping": {
+          "oneOf": [
+            { "$ref": "#/$defs/fileDescriptor" },
+            { "type": "null" }
+          ]
+        },
+        "outputSchemaDigest": { "$ref": "#/$defs/digest" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "mode": { "const": "identity" } },
+            "required": ["mode"]
+          },
+          "then": { "properties": { "mapping": { "type": "null" } } }
+        },
+        {
+          "if": {
+            "properties": { "mode": { "const": "declarative" } },
+            "required": ["mode"]
+          },
+          "then": { "properties": { "mapping": { "$ref": "#/$defs/fileDescriptor" } } }
+        }
+      ]
+    },
+    "webhookTrigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "entrypointRef",
+        "purpose",
+        "payloadSchema",
+        "normalization",
+        "methods",
+        "acceptedMediaTypes",
+        "verification",
+        "limits",
+        "ingressServiceRequirement",
+        "deliverySemantics",
+        "enabled"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "kind": { "const": "webhook" },
+        "entrypointRef": { "$ref": "#/$defs/identifier" },
+        "purpose": { "type": "string", "minLength": 1 },
+        "payloadSchema": { "$ref": "#/$defs/fileDescriptor" },
+        "normalization": { "$ref": "#/$defs/webhookNormalization" },
+        "methods": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "const": "POST" }
+        },
+        "acceptedMediaTypes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "const": "application/json" }
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["verifier", "connectionRef", "registry"],
+          "properties": {
+            "verifier": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9-]*)+$" },
+            "connectionRef": { "$ref": "#/$defs/identifier" },
+            "registry": { "$ref": "#/$defs/webhookVerifierRegistry" }
+          }
+        },
+        "limits": { "$ref": "#/$defs/webhookLimits" },
+        "ingressServiceRequirement": { "$ref": "#/$defs/serviceRequirement" },
+        "deliverySemantics": { "const": "at-least-once" },
+        "enabled": { "const": false }
+      }
+    },
+    "trigger": {
+      "oneOf": [
+        { "$ref": "#/$defs/scheduleTrigger" },
+        { "$ref": "#/$defs/webhookTrigger" }
+      ]
+    },
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "schemaVersion", "classificationHint", "scope", "lifecycle", "schema", "acceptedMediaTypes", "maxFileSizeBytes", "serviceRequirement"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "kind": { "enum": ["table", "file-store"] },
+        "schemaVersion": { "type": "string", "minLength": 1 },
+        "classificationHint": { "enum": ["public", "internal", "confidential", "restricted"] },
+        "scope": { "const": "app" },
+        "lifecycle": { "const": "retain" },
+        "schema": { "oneOf": [{ "$ref": "#/$defs/fileDescriptor" }, { "type": "null" }] },
+        "acceptedMediaTypes": { "$ref": "#/$defs/stringSet" },
+        "maxFileSizeBytes": { "$ref": "#/$defs/nullableInteger" },
+        "serviceRequirement": { "$ref": "#/$defs/serviceRequirement" }
+      }
+    },
+    "connection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "connector", "onUnavailable", "scopes", "purpose", "registry"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "connector": { "type": "string", "minLength": 1 },
+        "onUnavailable": { "enum": ["fail", "use-unconnected-mode", "disable-dependent-capabilities", "disable-dependent-entrypoints"] },
+        "scopes": { "$ref": "#/$defs/stringSet" },
+        "purpose": { "type": "string", "minLength": 1 },
+        "registry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["definitionVersion", "definitionDigest", "scopeSchemaDigest", "serviceInterface", "supportsUnconnectedMode"],
+          "properties": {
+            "definitionVersion": { "type": "string", "minLength": 1 },
+            "definitionDigest": { "$ref": "#/$defs/digest" },
+            "scopeSchemaDigest": { "$ref": "#/$defs/digest" },
+            "serviceInterface": { "type": "string", "minLength": 1 },
+            "supportsUnconnectedMode": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "capability", "connectionRef", "purpose", "constraints", "httpActionProfileCandidate", "registry"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "capability": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9-]*)+$" },
+        "connectionRef": { "oneOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+        "purpose": { "type": "string", "minLength": 1 },
+        "constraints": { "type": "object" },
+        "httpActionProfileCandidate": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["candidateDigest", "profileSchemaDigest"],
+              "properties": {
+                "candidateDigest": { "$ref": "#/$defs/digest" },
+                "profileSchemaDigest": { "$ref": "#/$defs/digest" }
+              }
+            }
+          ]
+        },
+        "registry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["definitionVersion", "definitionDigest", "requestSchemaDigest", "resultSchemaDigest", "effectClass", "riskClass", "minimumApproval", "idempotencyRequired", "auditEvents"],
+          "properties": {
+            "definitionVersion": { "type": "string", "minLength": 1 },
+            "definitionDigest": { "$ref": "#/$defs/digest" },
+            "requestSchemaDigest": { "$ref": "#/$defs/digest" },
+            "resultSchemaDigest": { "$ref": "#/$defs/digest" },
+            "effectClass": { "type": "string", "minLength": 1 },
+            "riskClass": { "enum": ["none", "low", "moderate", "high", "critical"] },
+            "minimumApproval": { "enum": ["never", "first-use", "always"] },
+            "idempotencyRequired": { "type": "boolean" },
+            "auditEvents": { "$ref": "#/$defs/stringSet" }
+          }
+        }
+      }
+    },
+    "contextAccess": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "scope", "selector", "purpose", "required", "maxAgeSeconds", "readInterface"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "scope": { "enum": ["user", "workspace", "app"] },
+        "selector": { "type": "string", "minLength": 1 },
+        "purpose": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "maxAgeSeconds": { "$ref": "#/$defs/nullableInteger" },
+        "readInterface": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["interface", "definitionDigest"],
+          "properties": {
+            "interface": { "type": "string", "minLength": 1 },
+            "definitionDigest": { "$ref": "#/$defs/digest" }
+          }
+        }
+      }
+    },
+    "policies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["audience", "selfModification", "directNetwork", "approvalRequests"],
+      "properties": {
+        "audience": { "const": "workspace-members" },
+        "selfModification": { "const": "propose-only" },
+        "directNetwork": { "const": false },
+        "approvalRequests": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/minimumApproval" }
+        }
+      }
+    },
+    "observability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mandatoryEvents", "evidence"],
+      "properties": {
+        "mandatoryEvents": { "$ref": "#/$defs/stringSet" },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["capture", "redactPaths"],
+          "properties": {
+            "capture": { "$ref": "#/$defs/stringSet" },
+            "redactPaths": { "$ref": "#/$defs/stringSet" }
+          }
+        }
+      }
+    },
+    "test": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "requiredFor", "command", "fixture", "evaluator"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "kind": { "enum": ["unit", "fixture", "outcome", "health"] },
+        "requiredFor": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["build", "preview", "release"] }
+        },
+        "command": { "type": ["string", "null"] },
+        "fixture": { "oneOf": [{ "$ref": "#/$defs/fileDescriptor" }, { "type": "null" }] },
+        "evaluator": { "type": ["string", "null"] }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["componentKinds", "entrypointKinds", "effectClasses", "highestRiskClass", "requiresConnections", "hasCustomInterface", "hasScheduledWork", "hasWebhookIngress"],
+      "properties": {
+        "componentKinds": { "$ref": "#/$defs/stringSet" },
+        "entrypointKinds": { "$ref": "#/$defs/stringSet" },
+        "effectClasses": { "$ref": "#/$defs/stringSet" },
+        "highestRiskClass": { "enum": ["none", "low", "moderate", "high", "critical"] },
+        "requiresConnections": { "type": "boolean" },
+        "hasCustomInterface": { "type": "boolean" },
+        "hasScheduledWork": { "type": "boolean" },
+        "hasWebhookIngress": { "type": "boolean" }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["configuration", "components", "surfaces", "entrypoints", "triggers", "resources", "connections", "capabilities", "context", "policies", "observability", "tests", "summary"],
+      "properties": {
+        "configuration": { "$ref": "#/$defs/configuration" },
+        "components": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/component" } },
+        "surfaces": { "type": "array", "items": { "$ref": "#/$defs/surface" } },
+        "entrypoints": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/entrypoint" } },
+        "triggers": { "type": "array", "items": { "$ref": "#/$defs/trigger" } },
+        "resources": { "type": "array", "items": { "$ref": "#/$defs/resource" } },
+        "connections": { "type": "array", "items": { "$ref": "#/$defs/connection" } },
+        "capabilities": { "type": "array", "items": { "$ref": "#/$defs/capability" } },
+        "context": { "type": "array", "items": { "$ref": "#/$defs/contextAccess" } },
+        "policies": { "$ref": "#/$defs/policies" },
+        "observability": { "$ref": "#/$defs/observability" },
+        "tests": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/test" } },
+        "summary": { "$ref": "#/$defs/summary" }
+      }
+    }
+  }
+}

@@ -1,0 +1,1040 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:alpha:release-resolution-record:v0.1",
+  "title": "Release Resolution Record v0.1 revision 5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "resolution", "spec"],
+  "properties": {
+    "apiVersion": { "const": "alpha.platform.release/v0.1" },
+    "kind": { "const": "ReleaseResolutionRecord" },
+    "metadata": { "$ref": "#/$defs/metadata" },
+    "resolution": { "$ref": "#/$defs/resolution" },
+    "spec": { "$ref": "#/$defs/spec" }
+  },
+  "$defs": {
+    "opaqueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "logicalRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "nonNegativeInteger": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "stringSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "releaseId",
+        "releaseRevisionId",
+        "workspaceId",
+        "appId",
+        "appVersionId",
+        "environment",
+        "resolvedManifestDigest",
+        "packageDigest"
+      ],
+      "properties": {
+        "releaseId": { "$ref": "#/$defs/opaqueId" },
+        "releaseRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "workspaceId": { "$ref": "#/$defs/opaqueId" },
+        "appId": { "$ref": "#/$defs/opaqueId" },
+        "appVersionId": { "$ref": "#/$defs/opaqueId" },
+        "environment": { "enum": ["preview", "active"] },
+        "resolvedManifestDigest": { "$ref": "#/$defs/digest" },
+        "packageDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "resolver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "digest"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "$ref": "#/$defs/semver" },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshotId", "digest"],
+      "properties": {
+        "snapshotId": { "$ref": "#/$defs/opaqueId" },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resolver", "registry", "policy", "inputDigest"],
+      "properties": {
+        "resolver": { "$ref": "#/$defs/resolver" },
+        "registry": { "$ref": "#/$defs/snapshot" },
+        "policy": { "$ref": "#/$defs/snapshot" },
+        "inputDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revisionId", "valuesDigest", "schemaDigest"],
+      "properties": {
+        "revisionId": { "$ref": "#/$defs/opaqueId" },
+        "valuesDigest": { "$ref": "#/$defs/digest" },
+        "schemaDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "compatibilityVersion",
+        "policyProfile",
+        "routingClass",
+        "exactImplementationDigest"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "compatibilityVersion": { "$ref": "#/$defs/semver" },
+        "policyProfile": { "type": "string", "minLength": 1 },
+        "routingClass": { "type": "string", "minLength": 1 },
+        "exactImplementationDigest": {
+          "oneOf": [
+            { "$ref": "#/$defs/digest" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "deploymentProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "definitionDigest"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "$ref": "#/$defs/semver" },
+        "definitionDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "releaseDeployment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "persistentStateLocation",
+        "defaultExecutionLocation",
+        "scheduleAuthority",
+        "availability"
+      ],
+      "properties": {
+        "target": { "enum": ["local", "cloud"] },
+        "persistentStateLocation": { "enum": ["device", "cloud"] },
+        "defaultExecutionLocation": { "enum": ["device", "cloud"] },
+        "scheduleAuthority": { "enum": ["device", "cloud"] },
+        "availability": {
+          "enum": ["while-device-runtime-available", "managed-always-on"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "target": { "const": "local" } },
+            "required": ["target"]
+          },
+          "then": {
+            "properties": {
+              "persistentStateLocation": { "const": "device" },
+              "defaultExecutionLocation": { "const": "device" },
+              "scheduleAuthority": { "const": "device" },
+              "availability": { "const": "while-device-runtime-available" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "target": { "const": "cloud" } },
+            "required": ["target"]
+          },
+          "then": {
+            "properties": {
+              "persistentStateLocation": { "const": "cloud" },
+              "defaultExecutionLocation": { "const": "cloud" },
+              "scheduleAuthority": { "const": "cloud" },
+              "availability": { "const": "managed-always-on" }
+            }
+          }
+        }
+      ]
+    },
+    "serviceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "interface",
+        "definitionDigest",
+        "provider",
+        "deploymentProfile",
+        "configurationRevisionId"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/logicalRef" },
+        "interface": { "type": "string", "minLength": 1 },
+        "definitionDigest": { "$ref": "#/$defs/digest" },
+        "provider": { "$ref": "#/$defs/provider" },
+        "deploymentProfile": { "$ref": "#/$defs/deploymentProfile" },
+        "configurationRevisionId": {
+          "oneOf": [
+            { "$ref": "#/$defs/opaqueId" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "resourceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resourceRef",
+        "resourceId",
+        "resourceBindingRevisionId",
+        "kind",
+        "schemaVersion",
+        "schemaDigest",
+        "classification",
+        "allowedModes",
+        "serviceBindingRef"
+      ],
+      "properties": {
+        "resourceRef": { "$ref": "#/$defs/logicalRef" },
+        "resourceId": { "$ref": "#/$defs/opaqueId" },
+        "resourceBindingRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "kind": { "enum": ["table", "file-store"] },
+        "schemaVersion": { "type": "string", "minLength": 1 },
+        "schemaDigest": {
+          "oneOf": [
+            { "$ref": "#/$defs/digest" },
+            { "type": "null" }
+          ]
+        },
+        "classification": { "type": "string", "minLength": 1 },
+        "allowedModes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["read", "append", "write"] }
+        },
+        "serviceBindingRef": { "$ref": "#/$defs/logicalRef" }
+      }
+    },
+    "connectionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connectionRef",
+        "connectionId",
+        "authorizationRevisionId",
+        "connector",
+        "grantedScopes",
+        "providerBindingRef",
+        "availability",
+        "onUnavailableResolved"
+      ],
+      "properties": {
+        "connectionRef": { "$ref": "#/$defs/logicalRef" },
+        "connectionId": {
+          "oneOf": [
+            { "$ref": "#/$defs/opaqueId" },
+            { "type": "null" }
+          ]
+        },
+        "authorizationRevisionId": {
+          "oneOf": [
+            { "$ref": "#/$defs/opaqueId" },
+            { "type": "null" }
+          ]
+        },
+        "connector": { "type": "string", "minLength": 1 },
+        "grantedScopes": { "$ref": "#/$defs/stringSet" },
+        "providerBindingRef": {
+          "oneOf": [
+            { "$ref": "#/$defs/logicalRef" },
+            { "type": "null" }
+          ]
+        },
+        "availability": { "enum": ["connected", "unconnected", "disabled", "missing"] },
+        "onUnavailableResolved": {
+          "enum": [
+            "use-unconnected-mode",
+            "disable-dependent-capabilities",
+            "disable-dependent-entrypoints",
+            "fail-release"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "availability": { "const": "connected" } },
+            "required": ["availability"]
+          },
+          "then": {
+            "properties": {
+              "connectionId": { "$ref": "#/$defs/opaqueId" },
+              "authorizationRevisionId": { "$ref": "#/$defs/opaqueId" },
+              "providerBindingRef": { "$ref": "#/$defs/logicalRef" }
+            }
+          }
+        }
+      ]
+    },
+    "contextBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contextRef",
+        "scope",
+        "selector",
+        "required",
+        "availability",
+        "sourceId",
+        "resolutionMode",
+        "classification",
+        "maxAgeSeconds",
+        "compatibilityVersion",
+        "pinnedRevisionId",
+        "pinnedDigest",
+        "serviceBindingRef"
+      ],
+      "properties": {
+        "contextRef": { "$ref": "#/$defs/logicalRef" },
+        "scope": { "enum": ["user", "workspace", "app"] },
+        "selector": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "availability": { "enum": ["bound", "omitted", "missing"] },
+        "sourceId": {
+          "oneOf": [
+            { "$ref": "#/$defs/opaqueId" },
+            { "type": "null" }
+          ]
+        },
+        "resolutionMode": { "enum": ["pinned", "latest-compatible"] },
+        "classification": {
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ]
+        },
+        "maxAgeSeconds": {
+          "oneOf": [
+            { "$ref": "#/$defs/positiveInteger" },
+            { "type": "null" }
+          ]
+        },
+        "compatibilityVersion": {
+          "oneOf": [
+            { "$ref": "#/$defs/semver" },
+            { "type": "null" }
+          ]
+        },
+        "pinnedRevisionId": {
+          "oneOf": [
+            { "$ref": "#/$defs/opaqueId" },
+            { "type": "null" }
+          ]
+        },
+        "pinnedDigest": {
+          "oneOf": [
+            { "$ref": "#/$defs/digest" },
+            { "type": "null" }
+          ]
+        },
+        "serviceBindingRef": { "$ref": "#/$defs/logicalRef" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "availability": { "const": "bound" } },
+            "required": ["availability"]
+          },
+          "then": {
+            "properties": {
+              "sourceId": { "$ref": "#/$defs/opaqueId" },
+              "classification": { "type": "string", "minLength": 1 },
+              "maxAgeSeconds": { "$ref": "#/$defs/positiveInteger" },
+              "compatibilityVersion": { "$ref": "#/$defs/semver" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "availability": { "const": "bound" },
+              "resolutionMode": { "const": "pinned" }
+            },
+            "required": ["availability", "resolutionMode"]
+          },
+          "then": {
+            "properties": {
+              "pinnedRevisionId": { "$ref": "#/$defs/opaqueId" },
+              "pinnedDigest": { "$ref": "#/$defs/digest" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "resolutionMode": { "const": "latest-compatible" } },
+            "required": ["resolutionMode"]
+          },
+          "then": {
+            "properties": {
+              "pinnedRevisionId": { "type": "null" },
+              "pinnedDigest": { "type": "null" }
+            }
+          }
+        }
+      ]
+    },
+    "grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grantId", "revisionId", "digest"],
+      "properties": {
+        "grantId": { "$ref": "#/$defs/opaqueId" },
+        "revisionId": { "$ref": "#/$defs/opaqueId" },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "provenance"],
+      "properties": {
+        "mode": { "enum": ["never", "first-use", "always"] },
+        "provenance": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "source-request",
+              "registry-minimum",
+              "workspace-policy",
+              "environment-policy",
+              "release-admin"
+            ]
+          }
+        }
+      }
+    },
+    "idempotency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "deduplicationWindowSeconds"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "deduplicationWindowSeconds": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "httpActionProfileBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profileId",
+        "profileRevisionId",
+        "profileDigest",
+        "candidateDigest",
+        "approvalDecisionId",
+        "connectionBindingRef"
+      ],
+      "properties": {
+        "profileId": { "$ref": "#/$defs/opaqueId" },
+        "profileRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "profileDigest": { "$ref": "#/$defs/digest" },
+        "candidateDigest": { "$ref": "#/$defs/digest" },
+        "approvalDecisionId": { "$ref": "#/$defs/opaqueId" },
+        "connectionBindingRef": { "$ref": "#/$defs/logicalRef" }
+      }
+    },
+    "capabilityBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capabilityRef",
+        "capability",
+        "definitionDigest",
+        "enabled",
+        "disabledReason",
+        "providerBindingRef",
+        "connectionBindingRef",
+        "grant",
+        "constraints",
+        "constraintsDigest",
+        "approval",
+        "idempotency",
+        "httpActionProfileBinding",
+        "executionMode",
+        "budgetDimensions"
+      ],
+      "properties": {
+        "capabilityRef": { "$ref": "#/$defs/logicalRef" },
+        "capability": { "type": "string", "minLength": 1 },
+        "definitionDigest": { "$ref": "#/$defs/digest" },
+        "enabled": { "type": "boolean" },
+        "disabledReason": {
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ]
+        },
+        "providerBindingRef": {
+          "oneOf": [
+            { "$ref": "#/$defs/logicalRef" },
+            { "type": "null" }
+          ]
+        },
+        "connectionBindingRef": {
+          "oneOf": [
+            { "$ref": "#/$defs/logicalRef" },
+            { "type": "null" }
+          ]
+        },
+        "grant": {
+          "oneOf": [
+            { "$ref": "#/$defs/grant" },
+            { "type": "null" }
+          ]
+        },
+        "constraints": { "type": "object" },
+        "constraintsDigest": { "$ref": "#/$defs/digest" },
+        "approval": { "$ref": "#/$defs/approval" },
+        "idempotency": { "$ref": "#/$defs/idempotency" },
+        "httpActionProfileBinding": {
+          "oneOf": [
+            { "$ref": "#/$defs/httpActionProfileBinding" },
+            { "type": "null" }
+          ]
+        },
+        "executionMode": { "enum": ["inline", "durable"] },
+        "budgetDimensions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["modelCalls", "browserSeconds", "capabilityCalls", "costMicrousd"]
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "enabled": { "const": true } },
+            "required": ["enabled"]
+          },
+          "then": {
+            "properties": {
+              "disabledReason": { "type": "null" },
+              "providerBindingRef": { "$ref": "#/$defs/logicalRef" },
+              "grant": { "$ref": "#/$defs/grant" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "enabled": { "const": false } },
+            "required": ["enabled"]
+          },
+          "then": {
+            "properties": {
+              "disabledReason": { "type": "string", "minLength": 1 },
+              "grant": { "type": "null" }
+            }
+          }
+        }
+      ]
+    },
+    "retry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxAttempts", "strategy", "baseDelaySeconds"],
+      "properties": {
+        "maxAttempts": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "strategy": { "enum": ["none", "fixed", "exponential"] },
+        "baseDelaySeconds": {
+          "oneOf": [
+            { "$ref": "#/$defs/nonNegativeInteger" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "concurrency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "maxParallel"],
+      "properties": {
+        "mode": { "enum": ["singleton", "parallel"] },
+        "maxParallel": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["modelCalls", "browserSeconds", "capabilityCalls", "costMicrousd"],
+      "properties": {
+        "modelCalls": { "$ref": "#/$defs/nonNegativeInteger" },
+        "browserSeconds": { "$ref": "#/$defs/nonNegativeInteger" },
+        "capabilityCalls": { "$ref": "#/$defs/nonNegativeInteger" },
+        "costMicrousd": { "$ref": "#/$defs/nonNegativeInteger" }
+      }
+    },
+    "authorityProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "definitionDigest"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "$ref": "#/$defs/semver" },
+        "definitionDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "entrypointResource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resourceRef", "modes"],
+      "properties": {
+        "resourceRef": { "$ref": "#/$defs/logicalRef" },
+        "modes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["read", "append", "write"] }
+        }
+      }
+    },
+    "effectiveExecution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timeoutSeconds", "retry", "concurrency", "budgets"],
+      "properties": {
+        "timeoutSeconds": { "$ref": "#/$defs/positiveInteger" },
+        "retry": { "$ref": "#/$defs/retry" },
+        "concurrency": { "$ref": "#/$defs/concurrency" },
+        "budgets": { "$ref": "#/$defs/budgets" }
+      }
+    },
+    "entrypointBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entrypointRef",
+        "enabled",
+        "disabledReasons",
+        "executionClosureDigest",
+        "runtimeServiceBindingRef",
+        "capabilityBindingRefs",
+        "resourceBindings",
+        "contextBindingRefs",
+        "effectiveExecution",
+        "authorityProfile"
+      ],
+      "properties": {
+        "entrypointRef": { "$ref": "#/$defs/logicalRef" },
+        "enabled": { "type": "boolean" },
+        "disabledReasons": { "$ref": "#/$defs/stringSet" },
+        "executionClosureDigest": { "$ref": "#/$defs/digest" },
+        "runtimeServiceBindingRef": { "$ref": "#/$defs/logicalRef" },
+        "capabilityBindingRefs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/logicalRef" }
+        },
+        "resourceBindings": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/entrypointResource" }
+        },
+        "contextBindingRefs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/logicalRef" }
+        },
+        "effectiveExecution": { "$ref": "#/$defs/effectiveExecution" },
+        "authorityProfile": { "$ref": "#/$defs/authorityProfile" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "enabled": { "const": true } },
+            "required": ["enabled"]
+          },
+          "then": {
+            "properties": { "disabledReasons": { "maxItems": 0 } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "enabled": { "const": false } },
+            "required": ["enabled"]
+          },
+          "then": {
+            "properties": { "disabledReasons": { "minItems": 1 } }
+          }
+        }
+      ]
+    },
+    "scheduleBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "triggerRef",
+        "entrypointRef",
+        "enabled",
+        "settingsRevisionId",
+        "settingsDigest",
+        "timezone",
+        "disabledReason"
+      ],
+      "properties": {
+        "triggerRef": { "$ref": "#/$defs/logicalRef" },
+        "entrypointRef": { "$ref": "#/$defs/logicalRef" },
+        "enabled": { "type": "boolean" },
+        "settingsRevisionId": {
+          "oneOf": [
+            { "$ref": "#/$defs/opaqueId" },
+            { "type": "null" }
+          ]
+        },
+        "settingsDigest": {
+          "oneOf": [
+            { "$ref": "#/$defs/digest" },
+            { "type": "null" }
+          ]
+        },
+        "timezone": {
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ]
+        },
+        "disabledReason": {
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "enabled": { "const": true } },
+            "required": ["enabled"]
+          },
+          "then": {
+            "properties": {
+              "settingsRevisionId": { "$ref": "#/$defs/opaqueId" },
+              "settingsDigest": { "$ref": "#/$defs/digest" },
+              "timezone": { "type": "string", "minLength": 1 },
+              "disabledReason": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "enabled": { "const": false } },
+            "required": ["enabled"]
+          },
+          "then": {
+            "properties": { "disabledReason": { "type": "string", "minLength": 1 } }
+          }
+        }
+      ]
+    },
+    "webhookReplayPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timestampToleranceSeconds", "deliveryIdentityMode", "deduplicationWindowSeconds"],
+      "properties": {
+        "timestampToleranceSeconds": {
+          "oneOf": [
+            { "$ref": "#/$defs/positiveInteger" },
+            { "type": "null" }
+          ]
+        },
+        "deliveryIdentityMode": {
+          "enum": ["provider-delivery-id", "signed-nonce", "payload-digest"]
+        },
+        "deduplicationWindowSeconds": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "webhookNormalizationBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "mappingDigest", "outputSchemaDigest"],
+      "properties": {
+        "mode": { "enum": ["identity", "declarative"] },
+        "mappingDigest": {
+          "oneOf": [
+            { "$ref": "#/$defs/digest" },
+            { "type": "null" }
+          ]
+        },
+        "outputSchemaDigest": { "$ref": "#/$defs/digest" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "mode": { "const": "identity" } },
+            "required": ["mode"]
+          },
+          "then": { "properties": { "mappingDigest": { "type": "null" } } }
+        },
+        {
+          "if": {
+            "properties": { "mode": { "const": "declarative" } },
+            "required": ["mode"]
+          },
+          "then": { "properties": { "mappingDigest": { "$ref": "#/$defs/digest" } } }
+        }
+      ]
+    },
+    "webhookVerificationProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profileRevisionId",
+        "profileDigest",
+        "verifier",
+        "verifierDefinitionDigest",
+        "connectionBindingRef",
+        "methods",
+        "acceptedMediaTypes",
+        "payloadSchemaDigest",
+        "entrypointInputSchemaDigest",
+        "normalization",
+        "maxPayloadBytes",
+        "maxEventsPerMinute",
+        "sourceConstraintSet",
+        "replayPolicy",
+        "quarantinePolicy",
+        "evidencePolicy",
+        "deliverySemantics"
+      ],
+      "properties": {
+        "profileRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "profileDigest": { "$ref": "#/$defs/digest" },
+        "verifier": { "type": "string", "minLength": 1 },
+        "verifierDefinitionDigest": { "$ref": "#/$defs/digest" },
+        "connectionBindingRef": { "$ref": "#/$defs/logicalRef" },
+        "methods": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "const": "POST" }
+        },
+        "acceptedMediaTypes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "const": "application/json" }
+        },
+        "payloadSchemaDigest": { "$ref": "#/$defs/digest" },
+        "entrypointInputSchemaDigest": { "$ref": "#/$defs/digest" },
+        "normalization": { "$ref": "#/$defs/webhookNormalizationBinding" },
+        "maxPayloadBytes": { "$ref": "#/$defs/positiveInteger" },
+        "maxEventsPerMinute": { "$ref": "#/$defs/positiveInteger" },
+        "sourceConstraintSet": {
+          "oneOf": [
+            { "$ref": "#/$defs/snapshot" },
+            { "type": "null" }
+          ]
+        },
+        "replayPolicy": { "$ref": "#/$defs/webhookReplayPolicy" },
+        "quarantinePolicy": { "$ref": "#/$defs/snapshot" },
+        "evidencePolicy": { "$ref": "#/$defs/snapshot" },
+        "deliverySemantics": { "const": "at-least-once" }
+      }
+    },
+    "webhookBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "triggerRef",
+        "entrypointRef",
+        "enabled",
+        "endpointBindingId",
+        "ingressServiceBindingRef",
+        "verificationProfile",
+        "disabledReason"
+      ],
+      "properties": {
+        "triggerRef": { "$ref": "#/$defs/logicalRef" },
+        "entrypointRef": { "$ref": "#/$defs/logicalRef" },
+        "enabled": { "type": "boolean" },
+        "endpointBindingId": {
+          "oneOf": [
+            { "$ref": "#/$defs/opaqueId" },
+            { "type": "null" }
+          ]
+        },
+        "ingressServiceBindingRef": {
+          "oneOf": [
+            { "$ref": "#/$defs/logicalRef" },
+            { "type": "null" }
+          ]
+        },
+        "verificationProfile": {
+          "oneOf": [
+            { "$ref": "#/$defs/webhookVerificationProfile" },
+            { "type": "null" }
+          ]
+        },
+        "disabledReason": {
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "enabled": { "const": true } },
+            "required": ["enabled"]
+          },
+          "then": {
+            "properties": {
+              "endpointBindingId": { "$ref": "#/$defs/opaqueId" },
+              "ingressServiceBindingRef": { "$ref": "#/$defs/logicalRef" },
+              "verificationProfile": { "$ref": "#/$defs/webhookVerificationProfile" },
+              "disabledReason": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "enabled": { "const": false } },
+            "required": ["enabled"]
+          },
+          "then": {
+            "properties": { "disabledReason": { "type": "string", "minLength": 1 } }
+          }
+        }
+      ]
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "code", "subjectRef", "detailsDigest"],
+      "properties": {
+        "id": { "$ref": "#/$defs/logicalRef" },
+        "status": { "enum": ["pass", "warning", "fail"] },
+        "code": { "type": "string", "minLength": 1 },
+        "subjectRef": { "type": "string", "minLength": 1 },
+        "detailsDigest": {
+          "oneOf": [
+            { "$ref": "#/$defs/digest" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "deployment",
+        "configuration",
+        "serviceBindings",
+        "resourceBindings",
+        "connectionBindings",
+        "contextBindings",
+        "capabilityBindings",
+        "entrypointBindings",
+        "scheduleBindings",
+        "webhookBindings",
+        "checks"
+      ],
+      "properties": {
+        "status": { "enum": ["ready", "degraded", "blocked"] },
+        "deployment": { "$ref": "#/$defs/releaseDeployment" },
+        "configuration": {
+          "oneOf": [
+            { "$ref": "#/$defs/configuration" },
+            { "type": "null" }
+          ]
+        },
+        "serviceBindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/serviceBinding" }
+        },
+        "resourceBindings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/resourceBinding" }
+        },
+        "connectionBindings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/connectionBinding" }
+        },
+        "contextBindings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/contextBinding" }
+        },
+        "capabilityBindings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/capabilityBinding" }
+        },
+        "entrypointBindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/entrypointBinding" }
+        },
+        "scheduleBindings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scheduleBinding" }
+        },
+        "webhookBindings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/webhookBinding" }
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/check" }
+        }
+      }
+    }
+  }
+}

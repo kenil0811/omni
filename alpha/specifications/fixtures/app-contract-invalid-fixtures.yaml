@@ -1,0 +1,136 @@
+fixtureVersion: alpha.platform/app-contract-invalid-fixtures/v1
+description: JSON Patch mutations applied to valid reference manifests to verify structural and semantic validation failures.
+
+cases:
+  - id: legacy-connection-required-field
+    base: ../examples/reference-app.yaml
+    patch:
+      - op: add
+        path: /spec/connections/0/required
+        value: false
+    expectedError: AC_UNKNOWN_FIELD
+    phase: schema
+
+  - id: unknown-core-field
+    base: ../examples/reference-app.yaml
+    patch:
+      - op: add
+        path: /spec/exports
+        value: {}
+    expectedError: AC_UNKNOWN_FIELD
+    phase: schema
+
+  - id: unsupported-resource-kind
+    base: ../examples/reference-reconciliation-app.yaml
+    patch:
+      - op: replace
+        path: /spec/resources/0/kind
+        value: object-store
+    expectedError: AC_SCHEMA_INVALID
+    phase: schema
+
+  - id: scheduled-action
+    base: ../examples/reference-app.yaml
+    patch:
+      - op: replace
+        path: /spec/entrypoints/0/kind
+        value: action
+    expectedError: AC_TRIGGER_INVALID
+    phase: semantic
+
+  - id: query-with-write-access
+    base: ../examples/reference-app.yaml
+    patch:
+      - op: add
+        path: /spec/entrypoints/1/resourceAccess/0/modes/-
+        value: write
+    expectedError: AC_QUERY_HAS_EFFECT
+    phase: semantic
+
+  - id: missing-external-action-approval
+    base: ../examples/reference-outreach-app.yaml
+    patch:
+      - op: remove
+        path: /spec/policies/approvalRequests/0
+    expectedError: AC_APPROVAL_REQUIRED
+    phase: semantic
+
+  - id: unresolved-capability-reference
+    base: ../examples/reference-reconciliation-app.yaml
+    patch:
+      - op: add
+        path: /spec/entrypoints/0/capabilities/-
+        value: missing-capability
+    expectedError: AC_UNKNOWN_REFERENCE
+    phase: semantic
+
+  - id: webhook-target-is-action
+    base: ../examples/reference-webhook-app.yaml
+    patch:
+      - op: replace
+        path: /spec/entrypoints/0/kind
+        value: action
+    expectedError: AC_TRIGGER_INVALID
+    phase: semantic
+
+  - id: webhook-invocation-missing
+    base: ../examples/reference-webhook-app.yaml
+    patch:
+      - op: replace
+        path: /spec/entrypoints/0/invocation/0
+        value: manual
+    expectedError: AC_TRIGGER_INVALID
+    phase: semantic
+
+  - id: webhook-identity-schema-mismatch
+    base: ../examples/reference-webhook-app.yaml
+    patch:
+      - op: replace
+        path: /spec/triggers/0/normalization
+        value:
+          mode: identity
+    expectedError: AC_TRIGGER_INVALID
+    phase: semantic
+
+  - id: webhook-verification-connection-missing
+    base: ../examples/reference-webhook-app.yaml
+    patch:
+      - op: replace
+        path: /spec/triggers/0/verification/connectionRef
+        value: missing-webhook-secret
+    expectedError: AC_UNKNOWN_REFERENCE
+    phase: semantic
+
+  - id: webhook-deduplication-window-too-short
+    base: ../examples/reference-webhook-app.yaml
+    patch:
+      - op: replace
+        path: /spec/triggers/0/limits/deduplicationWindowSeconds
+        value: 60
+    expectedError: AC_SCHEMA_INVALID
+    phase: schema
+
+  - id: webhook-method-outside-v0-profile
+    base: ../examples/reference-webhook-app.yaml
+    patch:
+      - op: replace
+        path: /spec/triggers/0/methods/0
+        value: PUT
+    expectedError: AC_SCHEMA_INVALID
+    phase: schema
+
+  - id: webhook-declarative-mapping-missing
+    base: ../examples/reference-webhook-app.yaml
+    patch:
+      - op: remove
+        path: /spec/triggers/0/normalization/mappingRef
+    expectedError: AC_SCHEMA_INVALID
+    phase: schema
+
+  - id: webhook-verification-removed
+    base: ../examples/reference-webhook-app.yaml
+    patch:
+      - op: remove
+        path: /spec/triggers/0/verification
+    expectedError: AC_SCHEMA_INVALID
+    phase: schema

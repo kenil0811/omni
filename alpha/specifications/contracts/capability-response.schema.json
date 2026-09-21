@@ -1,0 +1,299 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:alpha:capability-response:v0.1",
+  "title": "Capability Response v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "status",
+    "result",
+    "pendingApproval",
+    "error",
+    "receipt"
+  ],
+  "properties": {
+    "apiVersion": { "const": "alpha.platform.capability/v0.1" },
+    "kind": { "const": "CapabilityResponse" },
+    "metadata": { "$ref": "#/$defs/metadata" },
+    "status": { "enum": ["completed", "pending-approval", "denied", "failed", "cancelled"] },
+    "result": true,
+    "pendingApproval": {
+      "oneOf": [
+        { "$ref": "#/$defs/pendingApproval" },
+        { "type": "null" }
+      ]
+    },
+    "error": {
+      "oneOf": [
+        { "$ref": "#/$defs/error" },
+        { "type": "null" }
+      ]
+    },
+    "receipt": { "$ref": "#/$defs/receipt" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "completed" } },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "pendingApproval": { "type": "null" },
+          "error": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "status": { "const": "pending-approval" } },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "result": { "type": "null" },
+          "pendingApproval": { "$ref": "#/$defs/pendingApproval" },
+          "error": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "status": { "enum": ["denied", "failed", "cancelled"] } },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "result": { "type": "null" },
+          "pendingApproval": { "type": "null" },
+          "error": { "$ref": "#/$defs/error" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "opaqueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "logicalRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["callId", "operationId", "runId", "capabilityRef"],
+      "properties": {
+        "callId": { "$ref": "#/$defs/opaqueId" },
+        "operationId": { "$ref": "#/$defs/opaqueId" },
+        "runId": { "$ref": "#/$defs/opaqueId" },
+        "capabilityRef": { "$ref": "#/$defs/logicalRef" }
+      }
+    },
+    "pendingApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvalRequestId", "approvalMode", "requestedScope", "expiresAt"],
+      "properties": {
+        "approvalRequestId": { "$ref": "#/$defs/opaqueId" },
+        "approvalMode": { "enum": ["first-use", "always"] },
+        "requestedScope": { "enum": ["operation", "binding"] },
+        "expiresAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "retryable", "phase", "detailsRef"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^CP_[A-Z0-9_]+$" },
+        "message": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "retryable": { "type": "boolean" },
+        "phase": {
+          "enum": [
+            "authentication",
+            "authorization",
+            "validation",
+            "idempotency",
+            "budget",
+            "policy",
+            "approval",
+            "provider",
+            "result-validation",
+            "cancellation",
+            "internal"
+          ]
+        },
+        "detailsRef": {
+          "oneOf": [
+            { "$ref": "#/$defs/opaqueId" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["modelCalls", "browserSeconds", "capabilityCalls", "costMicrousd"],
+      "properties": {
+        "modelCalls": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "browserSeconds": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "capabilityCalls": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "costMicrousd": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+      }
+    },
+    "idempotencyReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["keyDigest", "replayed"],
+      "properties": {
+        "keyDigest": {
+          "oneOf": [
+            { "$ref": "#/$defs/digest" },
+            { "type": "null" }
+          ]
+        },
+        "replayed": { "type": "boolean" }
+      }
+    },
+    "budgetReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reservationId", "reserved", "charged"],
+      "properties": {
+        "reservationId": { "$ref": "#/$defs/opaqueId" },
+        "reserved": { "$ref": "#/$defs/usage" },
+        "charged": { "$ref": "#/$defs/usage" }
+      }
+    },
+    "providerExecution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "providerId",
+        "deploymentId",
+        "implementationDigest",
+        "credentialGenerationAuditRef"
+      ],
+      "properties": {
+        "providerId": { "type": "string", "minLength": 1 },
+        "deploymentId": { "$ref": "#/$defs/opaqueId" },
+        "implementationDigest": { "$ref": "#/$defs/digest" },
+        "credentialGenerationAuditRef": {
+          "oneOf": [
+            { "$ref": "#/$defs/opaqueId" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "releaseResolutionDigest",
+        "capabilityDefinitionDigest",
+        "authorizationDigest",
+        "effectDigest",
+        "executionMode",
+        "resultDigest",
+        "providerBindingRef",
+        "providerExecution",
+        "connectionBindingRef",
+        "policyDecisionId",
+        "approvalDecisionIds",
+        "idempotency",
+        "budget",
+        "evidenceRefs",
+        "auditEventRefs",
+        "receivedAt",
+        "completedAt"
+      ],
+      "properties": {
+        "releaseResolutionDigest": { "$ref": "#/$defs/digest" },
+        "capabilityDefinitionDigest": { "$ref": "#/$defs/digest" },
+        "authorizationDigest": { "$ref": "#/$defs/digest" },
+        "effectDigest": { "$ref": "#/$defs/digest" },
+        "executionMode": { "enum": ["inline", "durable"] },
+        "resultDigest": {
+          "oneOf": [
+            { "$ref": "#/$defs/digest" },
+            { "type": "null" }
+          ]
+        },
+        "providerBindingRef": {
+          "oneOf": [
+            { "$ref": "#/$defs/logicalRef" },
+            { "type": "null" }
+          ]
+        },
+        "providerExecution": {
+          "oneOf": [
+            { "$ref": "#/$defs/providerExecution" },
+            { "type": "null" }
+          ]
+        },
+        "connectionBindingRef": {
+          "oneOf": [
+            { "$ref": "#/$defs/logicalRef" },
+            { "type": "null" }
+          ]
+        },
+        "policyDecisionId": {
+          "oneOf": [
+            { "$ref": "#/$defs/opaqueId" },
+            { "type": "null" }
+          ]
+        },
+        "approvalDecisionIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        },
+        "idempotency": {
+          "oneOf": [
+            { "$ref": "#/$defs/idempotencyReceipt" },
+            { "type": "null" }
+          ]
+        },
+        "budget": {
+          "oneOf": [
+            { "$ref": "#/$defs/budgetReceipt" },
+            { "type": "null" }
+          ]
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        },
+        "auditEventRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        },
+        "receivedAt": { "type": "string", "format": "date-time" },
+        "completedAt": {
+          "oneOf": [
+            { "type": "string", "format": "date-time" },
+            { "type": "null" }
+          ]
+        }
+      }
+    }
+  }
+}

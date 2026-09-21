@@ -1,0 +1,230 @@
+apiVersion: alpha.platform/v0.1
+kind: AppManifest
+
+metadata:
+  name: invoice-reconciliation
+  displayName: Invoice Reconciliation
+  description: Compare uploaded invoice and ledger files, identify mismatches, and let users review and correct exceptions.
+  labels:
+    fixture: file-reconciliation
+
+spec:
+  compatibility:
+    sdk: ">=0.1 <0.2"
+
+  configuration:
+    schema: schemas/config.schema.json
+    uiSchema: ui/config.ui.json
+
+  components:
+    - id: reconciliation-worker
+      kind: handler-bundle
+      source: components/backend.tar.zst
+      dependencyLock: components/backend.lock.json
+
+    - id: reconciliation-view
+      kind: micro-frontend
+      source: ui/reconciliation.tsx
+      dependencyLock: ui/pnpm-lock.yaml
+
+  surfaces:
+    - id: reconciliation
+      kind: micro-frontend
+      componentRef: reconciliation-view
+      title: Reconciliation
+      route: /
+      entrypointRefs:
+        - process-files
+        - search-exceptions
+        - correct-exception
+      resourceRefs:
+        - source-files
+        - exceptions
+
+  entrypoints:
+    - id: process-files
+      kind: job
+      componentRef: reconciliation-worker
+      handler: handlers.process_files
+      inputSchema: schemas/process-input.schema.json
+      outputSchema: schemas/process-output.schema.json
+      invocation:
+        - ui
+        - manual
+      capabilities:
+        - files-read
+        - exceptions-read
+        - exceptions-write
+      resourceAccess:
+        - resourceRef: source-files
+          modes:
+            - read
+        - resourceRef: exceptions
+          modes:
+            - read
+            - append
+            - write
+      execution:
+        timeoutSeconds: 600
+        retry:
+          maxAttempts: 2
+          strategy: fixed
+          baseDelaySeconds: 5
+        concurrency:
+          mode: parallel
+          maxParallel: 5
+        budgets:
+          capabilityCalls: 2000
+          costMicrousd: 5000000
+      idempotency:
+        mode: caller-key
+        keyPointer: /submissionId
+      outcome:
+        evaluatorRefs:
+          - reconciliation-outcome
+        humanReview: on-low-confidence
+
+    - id: search-exceptions
+      kind: query
+      componentRef: reconciliation-worker
+      handler: handlers.search_exceptions
+      inputSchema: schemas/search-input.schema.json
+      outputSchema: schemas/search-output.schema.json
+      invocation:
+        - ui
+        - chat
+      capabilities:
+        - exceptions-read
+      resourceAccess:
+        - resourceRef: exceptions
+          modes:
+            - read
+      execution:
+        timeoutSeconds: 30
+      idempotency:
+        mode: none
+      outcome:
+        evaluatorRefs:
+          - reconciliation-fixture
+        humanReview: never
+
+    - id: correct-exception
+      kind: action
+      componentRef: reconciliation-worker
+      handler: handlers.correct_exception
+      inputSchema: schemas/correct-exception-input.schema.json
+      outputSchema: schemas/correct-exception-output.schema.json
+      invocation:
+        - ui
+      capabilities:
+        - exceptions-read
+        - exceptions-write
+      resourceAccess:
+        - resourceRef: exceptions
+          modes:
+            - read
+            - write
+      execution:
+        timeoutSeconds: 30
+        concurrency:
+          mode: parallel
+          maxParallel: 50
+        budgets:
+          capabilityCalls: 10
+          costMicrousd: 100000
+      idempotency:
+        mode: caller-key
+        keyPointer: /correctionId
+      outcome:
+        evaluatorRefs:
+          - correction-fixture
+        humanReview: never
+
+  resources:
+    - id: source-files
+      kind: file-store
+      schemaVersion: 1.0.0
+      classificationHint: confidential
+      acceptedMediaTypes:
+        - text/csv
+        - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        - application/pdf
+      maxFileSizeBytes: 52428800
+
+    - id: exceptions
+      kind: table
+      schemaRef: schemas/exception.schema.json
+      schemaVersion: 1.0.0
+      classificationHint: confidential
+
+  capabilities:
+    - id: files-read
+      capability: data.files.read
+      purpose: Read files uploaded to this App for reconciliation.
+      constraints:
+        resourceRefs:
+          - source-files
+
+    - id: exceptions-read
+      capability: data.table.read
+      purpose: Read reconciliation exceptions owned by this App.
+      constraints:
+        resourceRefs:
+          - exceptions
+
+    - id: exceptions-write
+      capability: data.table.write
+      purpose: Add and correct reconciliation exceptions.
+      constraints:
+        resourceRefs:
+          - exceptions
+        operations:
+          - insert
+          - update
+
+  observability:
+    evidence:
+      capture:
+        - inputs
+        - outputs
+        - capability-results
+      redactPaths:
+        - /bankAccount
+        - /taxIdentifier
+
+  tests:
+    - id: matching-unit
+      kind: unit
+      requiredFor:
+        - build
+      command: pytest tests/test_matching.py
+
+    - id: reconciliation-fixture
+      kind: fixture
+      requiredFor:
+        - preview
+        - release
+      fixture: tests/reconciliation.fixture.json
+      evaluator: evaluators.reconciliation_fixture
+
+    - id: reconciliation-outcome
+      kind: outcome
+      requiredFor:
+        - preview
+        - release
+      fixture: tests/expected-exceptions.json
+      evaluator: evaluators.reconciliation_outcome
+
+    - id: correction-fixture
+      kind: fixture
+      requiredFor:
+        - preview
+        - release
+      fixture: tests/correction.fixture.json
+      evaluator: evaluators.correction_fixture
+
+    - id: processor-health
+      kind: health
+      requiredFor:
+        - release
+      evaluator: evaluators.processor_health

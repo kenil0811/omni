@@ -1,0 +1,63 @@
+fixtureVersion: alpha.platform/app-ui-bridge-invalid-fixtures/v1
+description: JSON Patch mutations applied to valid App UI Bridge fixtures.
+
+cases:
+  - id: accepted-response-without-receipt
+    base: ../examples/reference-app-ui-entrypoint-response.json
+    patch:
+      - op: replace
+        path: /receipt
+        value: null
+    expectedError: AUI_SCHEMA_INVALID
+    phase: schema
+
+  - id: unknown-event-topic
+    base: ../examples/reference-app-ui-event.json
+    patch:
+      - op: replace
+        path: /topic
+        value: workspace-audit
+    expectedError: AUI_SCHEMA_INVALID
+    phase: schema
+
+  - id: undeclared-request-field
+    base: ../examples/reference-app-ui-resource-read.json
+    patch:
+      - op: add
+        path: /connectionRef
+        value: raw-database
+    expectedError: AUI_SCHEMA_INVALID
+    phase: schema
+
+  - id: generated-ui-requests-resource-write
+    base: ../examples/reference-app-ui-resource-read.json
+    patch:
+      - op: replace
+        path: /input/operation
+        value: update
+    expectedError: AUI_SCHEMA_INVALID
+    phase: schema
+
+  - id: request-method-not-granted
+    base: ../examples/reference-app-ui-resource-read.json
+    patch:
+      - op: replace
+        path: /method
+        value: artifact.open
+      - op: replace
+        path: /input
+        value:
+          artifactId: artifact-other-app-001
+          mode: view
+    expectedError: AUI_METHOD_NOT_GRANTED
+    phase: semantic
+
+  - id: request-resource-not-visible
+    base: ../examples/reference-app-ui-resource-read.json
+    patch:
+      - op: replace
+        path: /input/resourceRef
+        value: other-app-records
+    expectedError: AUI_RESOURCE_NOT_VISIBLE
+    phase: semantic
+

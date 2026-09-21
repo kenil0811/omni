@@ -1,0 +1,19 @@
+{
+  "apiVersion": "alpha.platform.capability/v0.1",
+  "kind": "CapabilityApprovalDecision",
+  "metadata": {
+    "decisionId": "aprdec-email-send-0001",
+    "approvalRequestId": "apr-email-send-0001"
+  },
+  "spec": {
+    "outcome": "approved",
+    "principalId": "user-reviewer-0007",
+    "principalType": "user",
+    "scope": "operation",
+    "reason": "Reviewed recipient and message preview.",
+    "decidedAt": "2026-09-16T12:02:00Z",
+    "expiresAt": "2026-09-16T12:07:00Z",
+    "authorizationDigest": "sha256:7171717171717171717171717171717171717171717171717171717171717171",
+    "effectDigest": "sha256:7272727272727272727272727272727272727272727272727272727272727272"
+  }
+}

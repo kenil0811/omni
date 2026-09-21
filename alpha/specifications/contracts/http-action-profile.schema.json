@@ -1,0 +1,414 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:alpha:http-action-profile:v0.1",
+  "title": "HTTP Action Profile v0.1",
+  "description": "Immutable, non-executable, Workspace-and-App-scoped authority description for one reviewed generic HTTP effect.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "resolution", "spec"],
+  "properties": {
+    "apiVersion": { "const": "alpha.platform.registry/v0.1" },
+    "kind": { "const": "HttpActionProfile" },
+    "metadata": { "$ref": "#/$defs/metadata" },
+    "resolution": { "$ref": "#/$defs/resolution" },
+    "spec": { "$ref": "#/$defs/spec" }
+  },
+  "$defs": {
+    "opaqueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "logicalRef": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 63,
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "stringSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 200 }
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshotId", "digest"],
+      "properties": {
+        "snapshotId": { "$ref": "#/$defs/opaqueId" },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profileId",
+        "profileRevisionId",
+        "workspaceId",
+        "appId",
+        "capabilityRef",
+        "displayName",
+        "description",
+        "status"
+      ],
+      "properties": {
+        "profileId": { "$ref": "#/$defs/opaqueId" },
+        "profileRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "workspaceId": { "$ref": "#/$defs/opaqueId" },
+        "appId": { "$ref": "#/$defs/opaqueId" },
+        "capabilityRef": { "$ref": "#/$defs/logicalRef" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "description": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "status": { "const": "approved" }
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidateDigest",
+        "sourceAppVersionId",
+        "capabilityDefinitionDigest",
+        "profileSchemaVersion",
+        "profileSchemaDigest",
+        "registry",
+        "policy",
+        "classifiedByServiceId",
+        "approvedByPrincipalId",
+        "approvalDecisionId",
+        "reviewedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "candidateDigest": { "$ref": "#/$defs/digest" },
+        "sourceAppVersionId": { "$ref": "#/$defs/opaqueId" },
+        "capabilityDefinitionDigest": { "$ref": "#/$defs/digest" },
+        "profileSchemaVersion": { "$ref": "#/$defs/semver" },
+        "profileSchemaDigest": { "$ref": "#/$defs/digest" },
+        "registry": { "$ref": "#/$defs/snapshot" },
+        "policy": { "$ref": "#/$defs/snapshot" },
+        "classifiedByServiceId": { "$ref": "#/$defs/opaqueId" },
+        "approvedByPrincipalId": { "$ref": "#/$defs/opaqueId" },
+        "approvalDecisionId": { "$ref": "#/$defs/opaqueId" },
+        "reviewedAt": { "type": "string", "format": "date-time" },
+        "expiresAt": {
+          "oneOf": [
+            { "type": "string", "format": "date-time" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scheme", "host", "port", "pathTemplate", "pathParameterNames", "queryParameterNames", "method", "redirectPolicy"],
+      "properties": {
+        "scheme": { "const": "https" },
+        "host": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 253,
+          "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?$"
+        },
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "pathTemplate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^/[^?#]*$"
+        },
+        "pathParameterNames": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"
+          }
+        },
+        "queryParameterNames": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,63}$"
+          }
+        },
+        "method": { "enum": ["POST", "PUT", "PATCH", "DELETE"] },
+        "redirectPolicy": { "const": "deny" }
+      }
+    },
+    "requestContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaDigest", "mediaTypes", "allowedHeaders", "forbiddenBodyPointers", "maximumBytes"],
+      "properties": {
+        "schemaDigest": { "$ref": "#/$defs/digest" },
+        "mediaTypes": { "$ref": "#/$defs/stringSet" },
+        "allowedHeaders": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,126}$"
+          }
+        },
+        "forbiddenBodyPointers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^(/([^/~]|~[01])*)+$"
+          }
+        },
+        "maximumBytes": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "responseContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaDigest", "mediaTypes", "allowedHeaders", "maximumBytes"],
+      "properties": {
+        "schemaDigest": { "$ref": "#/$defs/digest" },
+        "mediaTypes": { "$ref": "#/$defs/stringSet" },
+        "allowedHeaders": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,126}$"
+          }
+        },
+        "maximumBytes": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "materialFact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "role", "source", "selector", "valueType", "classification", "required", "display"],
+      "properties": {
+        "id": { "$ref": "#/$defs/logicalRef" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "role": { "enum": ["target", "effect"] },
+        "source": { "enum": ["path-parameter", "query", "header", "body"] },
+        "selector": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "valueType": { "enum": ["string", "integer", "decimal", "boolean", "identifier", "content-digest"] },
+        "classification": { "enum": ["public", "internal", "confidential", "restricted"] },
+        "required": { "type": "boolean" },
+        "display": { "type": "boolean" }
+      }
+    },
+    "materialEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effectClass", "action", "titleTemplate", "description", "materialFacts"],
+      "properties": {
+        "effectClass": { "const": "E3" },
+        "action": { "enum": ["create", "update", "delete", "send", "publish", "custom"] },
+        "titleTemplate": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "description": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "materialFacts": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 32,
+          "items": { "$ref": "#/$defs/materialFact" },
+          "allOf": [
+            { "contains": { "type": "object", "properties": { "role": { "const": "target" } }, "required": ["role"] } },
+            { "contains": { "type": "object", "properties": { "role": { "const": "effect" } }, "required": ["role"] } }
+          ]
+        }
+      }
+    },
+    "idempotencyHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "headerName", "providerRetentionSeconds"],
+      "properties": {
+        "mode": { "const": "idempotency-header" },
+        "headerName": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{0,126}$"
+        },
+        "providerRetentionSeconds": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "idempotencyBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "jsonPointer", "providerRetentionSeconds"],
+      "properties": {
+        "mode": { "const": "idempotency-body-field" },
+        "jsonPointer": { "type": "string", "pattern": "^(/([^/~]|~[01])*)+$" },
+        "providerRetentionSeconds": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "manualReconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "reconciliationEntrypointRef", "lookupFactRefs", "ambiguousOutcome"],
+      "properties": {
+        "mode": { "const": "manual-reconciliation" },
+        "reconciliationEntrypointRef": { "$ref": "#/$defs/logicalRef" },
+        "lookupFactRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/logicalRef" }
+        },
+        "ambiguousOutcome": { "const": "stop-and-review" }
+      }
+    },
+    "deliverySafety": {
+      "oneOf": [
+        { "$ref": "#/$defs/idempotencyHeader" },
+        { "$ref": "#/$defs/idempotencyBody" },
+        { "$ref": "#/$defs/manualReconciliation" }
+      ]
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxCallsPerRun", "maxCallsPerHour", "maxCallsPerDay", "maxItemsPerCall", "maxItemsPerDay", "timeoutSeconds"],
+      "properties": {
+        "maxCallsPerRun": { "$ref": "#/$defs/positiveInteger" },
+        "maxCallsPerHour": { "$ref": "#/$defs/positiveInteger" },
+        "maxCallsPerDay": { "$ref": "#/$defs/positiveInteger" },
+        "maxItemsPerCall": { "$ref": "#/$defs/positiveInteger" },
+        "maxItemsPerDay": { "$ref": "#/$defs/positiveInteger" },
+        "timeoutSeconds": { "type": "integer", "minimum": 1, "maximum": 300 }
+      }
+    },
+    "connection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["connectionRef", "connector", "connectorDefinitionDigest", "requiredScopes", "classificationCeiling"],
+      "properties": {
+        "connectionRef": { "$ref": "#/$defs/logicalRef" },
+        "connector": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "connectorDefinitionDigest": { "$ref": "#/$defs/digest" },
+        "requiredScopes": { "$ref": "#/$defs/stringSet" },
+        "classificationCeiling": { "enum": ["public", "internal", "confidential", "restricted"] }
+      }
+    },
+    "compensation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profileId", "profileRevisionId", "profileDigest"],
+      "properties": {
+        "profileId": { "$ref": "#/$defs/opaqueId" },
+        "profileRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "profileDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "reversibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "capturesPriorState", "compensation"],
+      "properties": {
+        "mode": { "enum": ["reversible", "compensatable", "irreversible"] },
+        "capturesPriorState": { "type": "boolean" },
+        "compensation": {
+          "oneOf": [
+            { "$ref": "#/$defs/compensation" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "mode": { "const": "compensatable" } }, "required": ["mode"] },
+          "then": { "properties": { "compensation": { "$ref": "#/$defs/compensation" } } }
+        }
+      ]
+    },
+    "approvalThreshold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric", "materialFactRef", "operator", "value", "raiseTo"],
+      "properties": {
+        "metric": { "enum": ["items-per-call", "calls-per-run", "material-fact"] },
+        "materialFactRef": {
+          "oneOf": [
+            { "$ref": "#/$defs/logicalRef" },
+            { "type": "null" }
+          ]
+        },
+        "operator": { "enum": ["gt", "gte"] },
+        "value": { "type": "number", "minimum": 0 },
+        "raiseTo": { "const": "always" }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline", "bindingApprovalTtlSeconds", "thresholds"],
+      "properties": {
+        "baseline": { "enum": ["first-use", "always"] },
+        "bindingApprovalTtlSeconds": {
+          "oneOf": [
+            { "$ref": "#/$defs/positiveInteger" },
+            { "type": "null" }
+          ]
+        },
+        "thresholds": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "$ref": "#/$defs/approvalThreshold" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "baseline": { "const": "first-use" } }, "required": ["baseline"] },
+          "then": { "properties": { "bindingApprovalTtlSeconds": { "$ref": "#/$defs/positiveInteger" } } }
+        },
+        {
+          "if": { "properties": { "baseline": { "const": "always" } }, "required": ["baseline"] },
+          "then": { "properties": { "bindingApprovalTtlSeconds": { "type": "null" } } }
+        }
+      ]
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capability",
+        "destination",
+        "request",
+        "response",
+        "materialEffect",
+        "deliverySafety",
+        "limits",
+        "connection",
+        "reversibility",
+        "approval"
+      ],
+      "properties": {
+        "capability": { "const": "http.request" },
+        "destination": { "$ref": "#/$defs/destination" },
+        "request": { "$ref": "#/$defs/requestContract" },
+        "response": { "$ref": "#/$defs/responseContract" },
+        "materialEffect": { "$ref": "#/$defs/materialEffect" },
+        "deliverySafety": { "$ref": "#/$defs/deliverySafety" },
+        "limits": { "$ref": "#/$defs/limits" },
+        "connection": { "$ref": "#/$defs/connection" },
+        "reversibility": { "$ref": "#/$defs/reversibility" },
+        "approval": { "$ref": "#/$defs/approval" }
+      }
+    }
+  }
+}

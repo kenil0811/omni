@@ -1,0 +1,102 @@
+fixtureVersion: alpha.platform/http-action-profile-invalid-fixtures/v1
+description: JSON Patch mutations applied to ../examples/reference-http-action-profile.json to verify structural and trusted semantic review failures.
+
+cases:
+  - id: wildcard-destination-host
+    patch:
+      - op: replace
+        path: /spec/destination/host
+        value: "*.example-crm.com"
+    expectedError: HAP_SCHEMA_INVALID
+    phase: schema
+
+  - id: path-template-carries-query
+    patch:
+      - op: replace
+        path: /spec/destination/pathTemplate
+        value: /v1/tasks?owner={ownerId}
+    expectedError: HAP_SCHEMA_INVALID
+    phase: schema
+
+  - id: redirect-policy-widened
+    patch:
+      - op: replace
+        path: /spec/destination/redirectPolicy
+        value: same-origin
+    expectedError: HAP_SCHEMA_INVALID
+    phase: schema
+
+  - id: forbidden-body-boundary-missing
+    patch:
+      - op: remove
+        path: /spec/request/forbiddenBodyPointers
+    expectedError: HAP_SCHEMA_INVALID
+    phase: schema
+
+  - id: no-material-target
+    patch:
+      - op: replace
+        path: /spec/materialEffect/materialFacts/0/role
+        value: effect
+      - op: replace
+        path: /spec/materialEffect/materialFacts/1/role
+        value: effect
+    expectedError: HAP_MATERIAL_EFFECT_INCOMPLETE
+    phase: schema
+
+  - id: credential-header-exposed
+    patch:
+      - op: add
+        path: /spec/request/allowedHeaders/-
+        value: authorization
+    expectedError: HAP_CREDENTIAL_PLACEMENT_INVALID
+    phase: semantic
+
+  - id: first-use-irreversible
+    patch:
+      - op: replace
+        path: /spec/reversibility/mode
+        value: irreversible
+      - op: replace
+        path: /spec/reversibility/compensation
+        value: null
+    expectedError: HAP_APPROVAL_TOO_WEAK
+    phase: semantic
+
+  - id: first-use-manual-reconciliation
+    patch:
+      - op: replace
+        path: /spec/deliverySafety
+        value:
+          mode: manual-reconciliation
+          reconciliationEntrypointRef: inspect-crm-task
+          lookupFactRefs:
+            - project-id
+            - task-title
+          ambiguousOutcome: stop-and-review
+    expectedError: HAP_APPROVAL_TOO_WEAK
+    phase: semantic
+
+  - id: unsupported-e4-effect
+    patch:
+      - op: replace
+        path: /spec/materialEffect/effectClass
+        value: E4
+    expectedError: HAP_SCHEMA_INVALID
+    phase: schema
+
+  - id: unknown-threshold-fact
+    patch:
+      - op: replace
+        path: /spec/approval/thresholds/0/metric
+        value: material-fact
+      - op: replace
+        path: /spec/approval/thresholds/0/materialFactRef
+        value: missing-fact
+    expectedError: HAP_UNKNOWN_REFERENCE
+    phase: semantic
+
+  - id: mismatched-candidate
+    mutation: Bind this approved profile to a resolved Capability carrying a different candidateDigest.
+    expectedError: HAP_CANDIDATE_MISMATCH
+    phase: binding

@@ -1,0 +1,24 @@
+{
+  "apiVersion": "alpha.platform.app-ui/v0.1",
+  "kind": "AppUiEvent",
+  "sessionId": "aui-session-monitor-001",
+  "eventId": "aui-event-input-0001",
+  "cursor": "aui-cursor-input-000001",
+  "sequence": 1,
+  "topic": "run",
+  "type": "human-input.requested",
+  "subject": {
+    "kind": "run",
+    "id": "run-vendor-analysis-0001"
+  },
+  "payloadSchemaDigest": "sha256:8686868686868686868686868686868686868686868686868686868686868686",
+  "payload": {
+    "state": "waiting-for-input",
+    "humanInputRequestId": "human-input-0001",
+    "title": "Which legal entity should be evaluated?",
+    "safeExplanation": "The sources refer to two entities with similar names, and the answer changes the evidence and recommendation.",
+    "expiresAt": "2026-09-18T13:04:00Z",
+    "trustedRunView": "run-vendor-analysis-0001"
+  },
+  "occurredAt": "2026-09-17T13:04:00Z"
+}

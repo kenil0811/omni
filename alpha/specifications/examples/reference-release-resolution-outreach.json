@@ -1,0 +1,729 @@
+{
+  "apiVersion": "alpha.platform.release/v0.1",
+  "kind": "ReleaseResolutionRecord",
+  "metadata": {
+    "appId": "app-assisted-outreach",
+    "appVersionId": "aver-assisted-outreach-006",
+    "environment": "active",
+    "packageDigest": "sha256:4747474747474747474747474747474747474747474747474747474747474747",
+    "releaseId": "rel-assisted-outreach-active",
+    "releaseRevisionId": "rrev-assisted-outreach-001",
+    "resolvedManifestDigest": "sha256:4646464646464646464646464646464646464646464646464646464646464646",
+    "workspaceId": "wsp-alpha-demo"
+  },
+  "resolution": {
+    "inputDigest": "sha256:4848484848484848484848484848484848484848484848484848484848484848",
+    "policy": {
+      "digest": "sha256:0505050505050505050505050505050505050505050505050505050505050505",
+      "snapshotId": "policy-wsp-alpha-active-004"
+    },
+    "registry": {
+      "digest": "sha256:0404040404040404040404040404040404040404040404040404040404040404",
+      "snapshotId": "registry-2026-09-16.1"
+    },
+    "resolver": {
+      "digest": "sha256:0303030303030303030303030303030303030303030303030303030303030303",
+      "id": "platform.release-resolver",
+      "version": "0.1.0"
+    }
+  },
+  "spec": {
+    "deployment": {
+      "target": "cloud",
+      "persistentStateLocation": "cloud",
+      "defaultExecutionLocation": "cloud",
+      "scheduleAuthority": "cloud",
+      "availability": "managed-always-on"
+    },
+    "capabilityBindings": [
+      {
+        "approval": {
+          "mode": "never",
+          "provenance": [
+            "registry-minimum"
+          ]
+        },
+        "budgetDimensions": [
+          "browserSeconds",
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "browser.navigate",
+        "capabilityRef": "browser-read",
+        "connectionBindingRef": "source-browser",
+        "constraints": {
+          "domainSource": "/sources/*/domain",
+          "methods": [
+            "GET"
+          ]
+        },
+        "constraintsDigest": "sha256:5959595959595959595959595959595959595959595959595959595959595959",
+        "definitionDigest": "sha256:1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "durable",
+        "grant": {
+          "digest": "sha256:5858585858585858585858585858585858585858585858585858585858585858",
+          "grantId": "grant-outreach-browser-read",
+          "revisionId": "grantrev-outreach-browser-read-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 86400,
+          "required": false
+        },
+        "providerBindingRef": "browser-provider"
+      },
+      {
+        "approval": {
+          "mode": "never",
+          "provenance": [
+            "registry-minimum"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "data.table.read",
+        "capabilityRef": "drafts-read",
+        "connectionBindingRef": null,
+        "constraints": {
+          "resourceRefs": [
+            "drafts"
+          ]
+        },
+        "constraintsDigest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+        "definitionDigest": "sha256:2525252525252525252525252525252525252525252525252525252525252525",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "inline",
+        "grant": {
+          "digest": "sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+          "grantId": "grant-drafts-read",
+          "revisionId": "grantrev-drafts-read-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 86400,
+          "required": false
+        },
+        "providerBindingRef": "table-provider"
+      },
+      {
+        "approval": {
+          "mode": "never",
+          "provenance": [
+            "registry-minimum"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "data.table.write",
+        "capabilityRef": "drafts-write",
+        "connectionBindingRef": null,
+        "constraints": {
+          "operations": [
+            "insert",
+            "update"
+          ],
+          "resourceRefs": [
+            "drafts"
+          ]
+        },
+        "constraintsDigest": "sha256:5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d",
+        "definitionDigest": "sha256:2828282828282828282828282828282828282828282828282828282828282828",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "durable",
+        "grant": {
+          "digest": "sha256:5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c",
+          "grantId": "grant-drafts-write",
+          "revisionId": "grantrev-drafts-write-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 604800,
+          "required": true
+        },
+        "providerBindingRef": "table-provider"
+      },
+      {
+        "approval": {
+          "mode": "always",
+          "provenance": [
+            "registry-minimum",
+            "source-request"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "communication.email.send",
+        "capabilityRef": "email-send",
+        "connectionBindingRef": "work-email",
+        "constraints": {
+          "maximumPerRun": 20,
+          "maximumRecipientsPerRequest": 1
+        },
+        "constraintsDigest": "sha256:6060606060606060606060606060606060606060606060606060606060606060",
+        "definitionDigest": "sha256:5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "durable",
+        "grant": {
+          "digest": "sha256:5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f",
+          "grantId": "grant-email-send",
+          "revisionId": "grantrev-email-send-002"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 2592000,
+          "required": true
+        },
+        "providerBindingRef": "email-provider"
+      },
+      {
+        "approval": {
+          "mode": "never",
+          "provenance": [
+            "registry-minimum"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd",
+          "modelCalls"
+        ],
+        "capability": "model.generate",
+        "capabilityRef": "model-generate",
+        "connectionBindingRef": null,
+        "constraints": {
+          "maximumCallsPerRun": 50
+        },
+        "constraintsDigest": "sha256:6363636363636363636363636363636363636363636363636363636363636363",
+        "definitionDigest": "sha256:6161616161616161616161616161616161616161616161616161616161616161",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "durable",
+        "grant": {
+          "digest": "sha256:6262626262626262626262626262626262626262626262626262626262626262",
+          "grantId": "grant-model-generate",
+          "revisionId": "grantrev-model-generate-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 86400,
+          "required": false
+        },
+        "providerBindingRef": "model-provider"
+      },
+      {
+        "approval": {
+          "mode": "never",
+          "provenance": [
+            "registry-minimum"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "data.table.read",
+        "capabilityRef": "prospects-read",
+        "connectionBindingRef": null,
+        "constraints": {
+          "resourceRefs": [
+            "prospects"
+          ]
+        },
+        "constraintsDigest": "sha256:6565656565656565656565656565656565656565656565656565656565656565",
+        "definitionDigest": "sha256:2525252525252525252525252525252525252525252525252525252525252525",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "inline",
+        "grant": {
+          "digest": "sha256:6464646464646464646464646464646464646464646464646464646464646464",
+          "grantId": "grant-prospects-read",
+          "revisionId": "grantrev-prospects-read-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 86400,
+          "required": false
+        },
+        "providerBindingRef": "table-provider"
+      },
+      {
+        "approval": {
+          "mode": "never",
+          "provenance": [
+            "registry-minimum"
+          ]
+        },
+        "budgetDimensions": [
+          "capabilityCalls",
+          "costMicrousd"
+        ],
+        "capability": "data.table.write",
+        "capabilityRef": "prospects-write",
+        "connectionBindingRef": null,
+        "constraints": {
+          "operations": [
+            "insert",
+            "update"
+          ],
+          "resourceRefs": [
+            "prospects"
+          ]
+        },
+        "constraintsDigest": "sha256:6767676767676767676767676767676767676767676767676767676767676767",
+        "definitionDigest": "sha256:2828282828282828282828282828282828282828282828282828282828282828",
+        "disabledReason": null,
+        "enabled": true,
+        "executionMode": "durable",
+        "grant": {
+          "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+          "grantId": "grant-prospects-write",
+          "revisionId": "grantrev-prospects-write-001"
+        },
+        "httpActionProfileBinding": null,
+        "idempotency": {
+          "deduplicationWindowSeconds": 604800,
+          "required": true
+        },
+        "providerBindingRef": "table-provider"
+      }
+    ],
+    "checks": [
+      {
+        "code": "RR_BINDINGS_VALID",
+        "detailsDigest": null,
+        "id": "binding-integrity",
+        "status": "pass",
+        "subjectRef": "release"
+      },
+      {
+        "code": "RR_TESTS_VALID",
+        "detailsDigest": "sha256:6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b",
+        "id": "release-tests",
+        "status": "pass",
+        "subjectRef": "validation-set-outreach-006"
+      }
+    ],
+    "configuration": {
+      "revisionId": "cfg-outreach-003",
+      "schemaDigest": "sha256:4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a",
+      "valuesDigest": "sha256:4949494949494949494949494949494949494949494949494949494949494949"
+    },
+    "connectionBindings": [
+      {
+        "authorizationRevisionId": "connrev-outreach-browser-003",
+        "availability": "connected",
+        "connectionId": "conn-outreach-browser",
+        "connectionRef": "source-browser",
+        "connector": "browser.profile",
+        "grantedScopes": [
+          "session.use"
+        ],
+        "onUnavailableResolved": "use-unconnected-mode",
+        "providerBindingRef": "browser-provider"
+      },
+      {
+        "authorizationRevisionId": "connrev-work-email-006",
+        "availability": "connected",
+        "connectionId": "conn-work-email",
+        "connectionRef": "work-email",
+        "connector": "email.account",
+        "grantedScopes": [
+          "email.send"
+        ],
+        "onUnavailableResolved": "disable-dependent-entrypoints",
+        "providerBindingRef": "email-provider"
+      }
+    ],
+    "contextBindings": [
+      {
+        "availability": "bound",
+        "classification": "internal",
+        "compatibilityVersion": "1.0.0",
+        "contextRef": "company-guidelines",
+        "maxAgeSeconds": 86400,
+        "pinnedDigest": null,
+        "pinnedRevisionId": null,
+        "required": false,
+        "resolutionMode": "latest-compatible",
+        "scope": "workspace",
+        "selector": "communications.outreach-guidelines",
+        "serviceBindingRef": "context-provider",
+        "sourceId": "ctx-company-guidelines"
+      },
+      {
+        "availability": "bound",
+        "classification": "internal",
+        "compatibilityVersion": "1.0.0",
+        "contextRef": "writing-preferences",
+        "maxAgeSeconds": 86400,
+        "pinnedDigest": null,
+        "pinnedRevisionId": null,
+        "required": false,
+        "resolutionMode": "latest-compatible",
+        "scope": "user",
+        "selector": "preferences.writing",
+        "serviceBindingRef": "context-provider",
+        "sourceId": "ctx-user-writing-preferences"
+      }
+    ],
+    "entrypointBindings": [
+      {
+        "authorityProfile": {
+          "definitionDigest": "sha256:2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c",
+          "id": "run-authority",
+          "version": "0.1.0"
+        },
+        "capabilityBindingRefs": [
+          "drafts-read",
+          "drafts-write",
+          "model-generate",
+          "prospects-read"
+        ],
+        "contextBindingRefs": [
+          "company-guidelines",
+          "writing-preferences"
+        ],
+        "disabledReasons": [],
+        "effectiveExecution": {
+          "budgets": {
+            "browserSeconds": 0,
+            "capabilityCalls": 500,
+            "costMicrousd": 5000000,
+            "modelCalls": 50
+          },
+          "concurrency": {
+            "maxParallel": 1,
+            "mode": "singleton"
+          },
+          "retry": {
+            "baseDelaySeconds": null,
+            "maxAttempts": 1,
+            "strategy": "none"
+          },
+          "timeoutSeconds": 300
+        },
+        "enabled": true,
+        "entrypointRef": "draft-messages",
+        "executionClosureDigest": "sha256:6868686868686868686868686868686868686868686868686868686868686868",
+        "resourceBindings": [
+          {
+            "modes": [
+              "append",
+              "read",
+              "write"
+            ],
+            "resourceRef": "drafts"
+          },
+          {
+            "modes": [
+              "read"
+            ],
+            "resourceRef": "prospects"
+          }
+        ],
+        "runtimeServiceBindingRef": "model-provider"
+      },
+      {
+        "authorityProfile": {
+          "definitionDigest": "sha256:2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c",
+          "id": "run-authority",
+          "version": "0.1.0"
+        },
+        "capabilityBindingRefs": [
+          "browser-read",
+          "prospects-read",
+          "prospects-write"
+        ],
+        "contextBindingRefs": [],
+        "disabledReasons": [],
+        "effectiveExecution": {
+          "budgets": {
+            "browserSeconds": 600,
+            "capabilityCalls": 3000,
+            "costMicrousd": 10000000,
+            "modelCalls": 0
+          },
+          "concurrency": {
+            "maxParallel": 1,
+            "mode": "singleton"
+          },
+          "retry": {
+            "baseDelaySeconds": null,
+            "maxAttempts": 1,
+            "strategy": "none"
+          },
+          "timeoutSeconds": 900
+        },
+        "enabled": true,
+        "entrypointRef": "research-prospects",
+        "executionClosureDigest": "sha256:6969696969696969696969696969696969696969696969696969696969696969",
+        "resourceBindings": [
+          {
+            "modes": [
+              "append",
+              "read",
+              "write"
+            ],
+            "resourceRef": "prospects"
+          }
+        ],
+        "runtimeServiceBindingRef": "python-runner"
+      },
+      {
+        "authorityProfile": {
+          "definitionDigest": "sha256:2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c",
+          "id": "run-authority",
+          "version": "0.1.0"
+        },
+        "capabilityBindingRefs": [
+          "drafts-read",
+          "drafts-write",
+          "email-send"
+        ],
+        "contextBindingRefs": [],
+        "disabledReasons": [],
+        "effectiveExecution": {
+          "budgets": {
+            "browserSeconds": 0,
+            "capabilityCalls": 100,
+            "costMicrousd": 1000000,
+            "modelCalls": 0
+          },
+          "concurrency": {
+            "maxParallel": 1,
+            "mode": "singleton"
+          },
+          "retry": {
+            "baseDelaySeconds": null,
+            "maxAttempts": 1,
+            "strategy": "none"
+          },
+          "timeoutSeconds": 120
+        },
+        "enabled": true,
+        "entrypointRef": "send-approved",
+        "executionClosureDigest": "sha256:6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a",
+        "resourceBindings": [
+          {
+            "modes": [
+              "read",
+              "write"
+            ],
+            "resourceRef": "drafts"
+          }
+        ],
+        "runtimeServiceBindingRef": "python-runner"
+      }
+    ],
+    "resourceBindings": [
+      {
+        "allowedModes": [
+          "append",
+          "read",
+          "write"
+        ],
+        "classification": "confidential",
+        "kind": "table",
+        "resourceBindingRevisionId": "resrev-outreach-drafts-003",
+        "resourceId": "res-outreach-drafts",
+        "resourceRef": "drafts",
+        "schemaDigest": "sha256:5454545454545454545454545454545454545454545454545454545454545454",
+        "schemaVersion": "1.0.0",
+        "serviceBindingRef": "table-provider"
+      },
+      {
+        "allowedModes": [
+          "append",
+          "read",
+          "write"
+        ],
+        "classification": "confidential",
+        "kind": "table",
+        "resourceBindingRevisionId": "resrev-outreach-prospects-003",
+        "resourceId": "res-outreach-prospects",
+        "resourceRef": "prospects",
+        "schemaDigest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "schemaVersion": "1.0.0",
+        "serviceBindingRef": "table-provider"
+      }
+    ],
+    "scheduleBindings": [],
+    "serviceBindings": [
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:0909090909090909090909090909090909090909090909090909090909090909",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+          "id": "workspace-internal",
+          "version": "0.1.0"
+        },
+        "id": "app-ui-bridge",
+        "interface": "platform.app-ui-bridge/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "platform-app-ui-bridge",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": "pcfg-browser-002",
+        "definitionDigest": "sha256:0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+          "id": "isolated-browser",
+          "version": "0.1.0"
+        },
+        "id": "browser-provider",
+        "interface": "platform.connector.browser-profile/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "cloud-browser-provider",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "id": "regional-ha",
+          "version": "0.1.0"
+        },
+        "id": "capability-broker",
+        "interface": "platform.capability-broker/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "platform-capability-broker",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d",
+          "id": "workspace-context",
+          "version": "0.1.0"
+        },
+        "id": "context-provider",
+        "interface": "platform.context.read/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "platform-context-service",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": "pcfg-email-001",
+        "definitionDigest": "sha256:4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:5050505050505050505050505050505050505050505050505050505050505050",
+          "id": "outbound-email",
+          "version": "0.1.0"
+        },
+        "id": "email-provider",
+        "interface": "platform.connector.email-account/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "workspace-email-adapter",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": "pcfg-model-router-006",
+        "definitionDigest": "sha256:5151515151515151515151515151515151515151515151515151515151515151",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:5353535353535353535353535353535353535353535353535353535353535353",
+          "id": "workspace-approved-models",
+          "version": "0.1.0"
+        },
+        "id": "model-provider",
+        "interface": "platform.model.generate/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "managed-model-router",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:1212121212121212121212121212121212121212121212121212121212121212",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1414141414141414141414141414141414141414141414141414141414141414",
+          "id": "workspace-internal",
+          "version": "0.1.0"
+        },
+        "id": "native-ui-host",
+        "interface": "platform.ui.native-host/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "platform-native-ui",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:1818181818181818181818181818181818181818181818181818181818181818",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a",
+          "id": "standard-isolated",
+          "version": "0.1.0"
+        },
+        "id": "python-runner",
+        "interface": "platform.runner.python/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "cloud-python-runner",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      },
+      {
+        "configurationRevisionId": null,
+        "definitionDigest": "sha256:1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b",
+        "deploymentProfile": {
+          "definitionDigest": "sha256:1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d",
+          "id": "workspace-shared-isolated-schema",
+          "version": "0.1.0"
+        },
+        "id": "table-provider",
+        "interface": "platform.resource.table/v0.1",
+        "provider": {
+          "compatibilityVersion": "0.1.0",
+          "exactImplementationDigest": null,
+          "id": "managed-postgres-table",
+          "policyProfile": "managed-standard",
+          "routingClass": "workspace-managed"
+        }
+      }
+    ],
+    "status": "ready",
+    "webhookBindings": []
+  }
+}

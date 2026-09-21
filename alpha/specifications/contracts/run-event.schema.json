@@ -1,0 +1,352 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:alpha:run-event:v0.1",
+  "title": "Run Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "eventId",
+    "runId",
+    "sequence",
+    "observedAt",
+    "recordedAt",
+    "type",
+    "visibility",
+    "source",
+    "correlation",
+    "payload"
+  ],
+  "properties": {
+    "apiVersion": { "const": "alpha.platform.run-events/v0.1" },
+    "eventId": { "$ref": "#/$defs/ref" },
+    "runId": { "$ref": "#/$defs/ref" },
+    "sequence": { "type": "integer", "minimum": 1 },
+    "observedAt": { "$ref": "#/$defs/timestamp" },
+    "recordedAt": { "$ref": "#/$defs/timestamp" },
+    "type": {
+      "enum": [
+        "run.created",
+        "run.state.changed",
+        "run.milestone",
+        "run.related",
+        "context.selected",
+        "model.call",
+        "resource.operation",
+        "capability.operation",
+        "approval.requested",
+        "approval.decided",
+        "human-input.requested",
+        "human-input.received",
+        "budget.changed",
+        "artifact.recorded",
+        "evidence.recorded",
+        "outcome.changed",
+        "run.error"
+      ]
+    },
+    "visibility": { "enum": ["user", "operator", "restricted"] },
+    "source": { "$ref": "#/$defs/source" },
+    "correlation": { "$ref": "#/$defs/correlation" },
+    "payload": { "type": "object" }
+  },
+  "allOf": [
+    { "if": { "properties": { "type": { "const": "run.created" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/runCreated" } } } },
+    { "if": { "properties": { "type": { "const": "run.state.changed" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/stateChanged" } } } },
+    { "if": { "properties": { "type": { "const": "run.milestone" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/milestone" } } } },
+    { "if": { "properties": { "type": { "const": "run.related" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/runRelated" } } } },
+    { "if": { "properties": { "type": { "const": "context.selected" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/contextSelected" } } } },
+    { "if": { "properties": { "type": { "const": "model.call" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/modelCall" } } } },
+    { "if": { "properties": { "type": { "const": "resource.operation" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/resourceOperation" } } } },
+    { "if": { "properties": { "type": { "const": "capability.operation" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/capabilityOperation" } } } },
+    { "if": { "properties": { "type": { "const": "approval.requested" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/approvalRequested" } } } },
+    { "if": { "properties": { "type": { "const": "approval.decided" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/approvalDecided" } } } },
+    { "if": { "properties": { "type": { "const": "human-input.requested" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/humanInputRequested" } } } },
+    { "if": { "properties": { "type": { "const": "human-input.received" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/humanInputReceived" } } } },
+    { "if": { "properties": { "type": { "const": "budget.changed" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/budgetChanged" } } } },
+    { "if": { "properties": { "type": { "const": "artifact.recorded" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/artifactRecorded" } } } },
+    { "if": { "properties": { "type": { "const": "evidence.recorded" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/evidenceRecorded" } } } },
+    { "if": { "properties": { "type": { "const": "outcome.changed" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/outcomeChanged" } } } },
+    { "if": { "properties": { "type": { "const": "run.error" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/runError" } } } }
+  ],
+  "$defs": {
+    "ref": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "nullableRef": { "oneOf": [{ "$ref": "#/$defs/ref" }, { "type": "null" }] },
+    "nullableDigest": { "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }] },
+    "nullableString": { "oneOf": [{ "type": "string", "minLength": 1, "maxLength": 512 }, { "type": "null" }] },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plane", "service", "sourceEventId"],
+      "properties": {
+        "plane": { "enum": ["control-plane", "runner", "capability-broker", "resource-service", "model-service", "evaluator", "scheduler"] },
+        "service": { "$ref": "#/$defs/ref" },
+        "sourceEventId": { "$ref": "#/$defs/ref" }
+      }
+    },
+    "correlation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "causationEventId": { "$ref": "#/$defs/nullableRef" },
+        "componentRef": { "$ref": "#/$defs/nullableRef" },
+        "workerLeaseId": { "$ref": "#/$defs/nullableRef" },
+        "operationId": { "$ref": "#/$defs/nullableRef" },
+        "modelCallId": { "$ref": "#/$defs/nullableRef" },
+        "resourceOperationId": { "$ref": "#/$defs/nullableRef" },
+        "approvalRequestId": { "$ref": "#/$defs/nullableRef" },
+        "humanInputRequestId": { "$ref": "#/$defs/nullableRef" }
+      }
+    },
+    "runCreated": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workspaceId", "appId", "appVersionId", "releaseId", "releaseResolutionDigest", "packageDigest", "runProjectionDigest", "entrypointRef", "trigger", "initiatingPrincipalRef", "effectivePrincipalRef", "inputDigest", "inputArtifactRefs"],
+      "properties": {
+        "workspaceId": { "$ref": "#/$defs/ref" },
+        "appId": { "$ref": "#/$defs/ref" },
+        "appVersionId": { "$ref": "#/$defs/ref" },
+        "releaseId": { "$ref": "#/$defs/ref" },
+        "releaseResolutionDigest": { "$ref": "#/$defs/digest" },
+        "packageDigest": { "$ref": "#/$defs/digest" },
+        "runProjectionDigest": { "$ref": "#/$defs/digest" },
+        "entrypointRef": { "$ref": "#/$defs/ref" },
+        "trigger": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "ref"],
+          "properties": {
+            "kind": { "enum": ["manual", "schedule", "chat", "ui", "platform"] },
+            "ref": { "$ref": "#/$defs/nullableRef" }
+          }
+        },
+        "initiatingPrincipalRef": { "$ref": "#/$defs/ref" },
+        "effectivePrincipalRef": { "$ref": "#/$defs/ref" },
+        "inputDigest": { "$ref": "#/$defs/digest" },
+        "inputArtifactRefs": { "type": "array", "items": { "$ref": "#/$defs/ref" }, "uniqueItems": true }
+      }
+    },
+    "stateChanged": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "to", "reasonCode"],
+      "properties": {
+        "from": { "$ref": "#/$defs/runState" },
+        "to": { "$ref": "#/$defs/runState" },
+        "reasonCode": { "$ref": "#/$defs/nullableString" }
+      }
+    },
+    "runState": { "enum": ["queued", "running", "awaiting-approval", "awaiting-input", "succeeded", "failed", "cancelled", "timed-out"] },
+    "milestone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["phase", "state", "code", "progressPercent"],
+      "properties": {
+        "phase": { "enum": ["prepare", "execute", "validate", "finalize"] },
+        "state": { "enum": ["started", "completed", "blocked"] },
+        "code": { "$ref": "#/$defs/ref" },
+        "progressPercent": { "oneOf": [{ "type": "integer", "minimum": 0, "maximum": 100 }, { "type": "null" }] }
+      }
+    },
+    "runRelated": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relatedRunId", "relation"],
+      "properties": {
+        "relatedRunId": { "$ref": "#/$defs/ref" },
+        "relation": { "enum": ["child-of", "retry-of", "replay-of", "repair-of"] }
+      }
+    },
+    "contextSelected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bindingRef", "contextRef", "resolutionMode", "revisionId", "contentDigest"],
+      "properties": {
+        "bindingRef": { "$ref": "#/$defs/ref" },
+        "contextRef": { "$ref": "#/$defs/ref" },
+        "resolutionMode": { "enum": ["pinned", "latest-compatible"] },
+        "revisionId": { "$ref": "#/$defs/ref" },
+        "contentDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "modelCall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["callId", "state", "routeRef", "providerBindingRef", "providerDeploymentRef", "modelRef", "inputDigest", "outputDigest", "inputTokens", "outputTokens", "costMicrousd", "evidenceRefs", "errorCode"],
+      "properties": {
+        "callId": { "$ref": "#/$defs/ref" },
+        "state": { "enum": ["started", "completed", "failed", "cancelled"] },
+        "routeRef": { "$ref": "#/$defs/ref" },
+        "providerBindingRef": { "$ref": "#/$defs/ref" },
+        "providerDeploymentRef": { "$ref": "#/$defs/nullableRef" },
+        "modelRef": { "$ref": "#/$defs/nullableRef" },
+        "inputDigest": { "$ref": "#/$defs/digest" },
+        "outputDigest": { "$ref": "#/$defs/nullableDigest" },
+        "inputTokens": { "oneOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }] },
+        "outputTokens": { "oneOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }] },
+        "costMicrousd": { "oneOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }] },
+        "evidenceRefs": { "type": "array", "items": { "$ref": "#/$defs/ref" }, "uniqueItems": true },
+        "errorCode": { "$ref": "#/$defs/nullableString" }
+      }
+    },
+    "resourceOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operationId", "resourceRef", "action", "state", "affectedCount", "snapshotRef", "changeArtifactRef", "resultDigest", "errorCode"],
+      "properties": {
+        "operationId": { "$ref": "#/$defs/ref" },
+        "resourceRef": { "$ref": "#/$defs/ref" },
+        "action": { "enum": ["read", "query", "insert", "update", "delete", "upload", "download"] },
+        "state": { "enum": ["started", "completed", "failed", "cancelled"] },
+        "affectedCount": { "oneOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }] },
+        "snapshotRef": { "$ref": "#/$defs/nullableRef" },
+        "changeArtifactRef": { "$ref": "#/$defs/nullableRef" },
+        "resultDigest": { "$ref": "#/$defs/nullableDigest" },
+        "errorCode": { "$ref": "#/$defs/nullableString" }
+      }
+    },
+    "capabilityOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operationId", "callId", "capabilityRef", "capability", "definitionDigest", "releaseResolutionDigest", "executionMode", "state", "authorizationDigest", "effectDigest", "providerBindingRef", "providerDeploymentRef", "providerImplementationDigest", "resultDigest", "receiptRef", "errorCode", "retryable"],
+      "properties": {
+        "operationId": { "$ref": "#/$defs/ref" },
+        "callId": { "$ref": "#/$defs/ref" },
+        "capabilityRef": { "$ref": "#/$defs/ref" },
+        "capability": { "$ref": "#/$defs/ref" },
+        "definitionDigest": { "$ref": "#/$defs/digest" },
+        "releaseResolutionDigest": { "$ref": "#/$defs/digest" },
+        "executionMode": { "enum": ["inline", "durable"] },
+        "state": { "enum": ["accepted", "authorized", "waiting-approval", "executing", "completed", "denied", "failed", "cancelled", "replayed"] },
+        "authorizationDigest": { "$ref": "#/$defs/nullableDigest" },
+        "effectDigest": { "$ref": "#/$defs/nullableDigest" },
+        "providerBindingRef": { "$ref": "#/$defs/nullableRef" },
+        "providerDeploymentRef": { "$ref": "#/$defs/nullableRef" },
+        "providerImplementationDigest": { "$ref": "#/$defs/nullableDigest" },
+        "resultDigest": { "$ref": "#/$defs/nullableDigest" },
+        "receiptRef": { "$ref": "#/$defs/nullableRef" },
+        "errorCode": { "$ref": "#/$defs/nullableString" },
+        "retryable": { "oneOf": [{ "type": "boolean" }, { "type": "null" }] }
+      }
+    },
+    "approvalRequested": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvalRequestId", "operationId", "scope", "authorizationDigest", "effectDigest", "materialFactsRef", "expiresAt"],
+      "properties": {
+        "approvalRequestId": { "$ref": "#/$defs/ref" },
+        "operationId": { "$ref": "#/$defs/ref" },
+        "scope": { "enum": ["operation", "binding"] },
+        "authorizationDigest": { "$ref": "#/$defs/digest" },
+        "effectDigest": { "$ref": "#/$defs/digest" },
+        "materialFactsRef": { "$ref": "#/$defs/ref" },
+        "expiresAt": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "approvalDecided": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvalRequestId", "approvalDecisionId", "operationId", "decision", "scope", "decidedByPrincipalRef", "authorizationDigest", "effectDigest"],
+      "properties": {
+        "approvalRequestId": { "$ref": "#/$defs/ref" },
+        "approvalDecisionId": { "$ref": "#/$defs/ref" },
+        "operationId": { "$ref": "#/$defs/ref" },
+        "decision": { "enum": ["approved", "denied", "expired", "revoked"] },
+        "scope": { "enum": ["operation", "binding"] },
+        "decidedByPrincipalRef": { "$ref": "#/$defs/ref" },
+        "authorizationDigest": { "$ref": "#/$defs/digest" },
+        "effectDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "humanInputRequested": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["humanInputRequestId", "title", "safeExplanation", "responseSchemaDigest", "requestingComponentRef", "expiresAt"],
+      "properties": {
+        "humanInputRequestId": { "$ref": "#/$defs/ref" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "safeExplanation": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "responseSchemaDigest": { "$ref": "#/$defs/digest" },
+        "requestingComponentRef": { "$ref": "#/$defs/ref" },
+        "expiresAt": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "humanInputReceived": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["humanInputRequestId", "respondedByPrincipalRef", "responseDigest", "responseArtifactRefs", "receivedAt"],
+      "properties": {
+        "humanInputRequestId": { "$ref": "#/$defs/ref" },
+        "respondedByPrincipalRef": { "$ref": "#/$defs/ref" },
+        "responseDigest": { "$ref": "#/$defs/digest" },
+        "responseArtifactRefs": { "type": "array", "items": { "$ref": "#/$defs/ref" }, "uniqueItems": true },
+        "receivedAt": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "budgetChanged": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension", "action", "amount", "remaining", "basisRef"],
+      "properties": {
+        "dimension": { "enum": ["modelCalls", "browserSeconds", "capabilityCalls", "costMicrousd"] },
+        "action": { "enum": ["reserved", "charged", "settled", "released"] },
+        "amount": { "type": "integer", "minimum": 0 },
+        "remaining": { "type": "integer", "minimum": 0 },
+        "basisRef": { "$ref": "#/$defs/ref" }
+      }
+    },
+    "artifactRecorded": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifactRef", "role", "mediaType", "contentDigest", "sizeBytes", "retentionClass"],
+      "properties": {
+        "artifactRef": { "$ref": "#/$defs/ref" },
+        "role": { "enum": ["input", "output", "evidence", "log", "screenshot", "report", "data-snapshot"] },
+        "mediaType": { "type": "string", "pattern": "^[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+$" },
+        "contentDigest": { "$ref": "#/$defs/digest" },
+        "sizeBytes": { "type": "integer", "minimum": 0 },
+        "retentionClass": { "enum": ["ephemeral", "standard", "audit", "legal-hold"] }
+      }
+    },
+    "evidenceRecorded": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidenceRef", "kind", "subjectRef", "artifactRef", "contentDigest"],
+      "properties": {
+        "evidenceRef": { "$ref": "#/$defs/ref" },
+        "kind": { "enum": ["source", "screenshot", "trace", "validation", "provider-receipt", "model-decision", "resource-change"] },
+        "subjectRef": { "$ref": "#/$defs/ref" },
+        "artifactRef": { "$ref": "#/$defs/ref" },
+        "contentDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "outcomeChanged": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "to", "evaluatorType", "evaluatorRef", "evidenceRefs", "reasonCode"],
+      "properties": {
+        "from": { "oneOf": [{ "$ref": "#/$defs/outcomeState" }, { "type": "null" }] },
+        "to": { "$ref": "#/$defs/outcomeState" },
+        "evaluatorType": { "enum": ["none", "schema", "deterministic", "model", "human", "policy"] },
+        "evaluatorRef": { "$ref": "#/$defs/nullableRef" },
+        "evidenceRefs": { "type": "array", "items": { "$ref": "#/$defs/ref" }, "uniqueItems": true },
+        "reasonCode": { "$ref": "#/$defs/nullableString" }
+      }
+    },
+    "outcomeState": { "enum": ["not-evaluated", "passed", "failed", "needs-review"] },
+    "runError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "safeMessage", "phase", "retryable", "detailsRef"],
+      "properties": {
+        "code": { "$ref": "#/$defs/ref" },
+        "safeMessage": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "phase": { "enum": ["prepare", "execute", "validate", "finalize", "authorization", "approval", "input", "provider", "resource", "model", "internal"] },
+        "retryable": { "type": "boolean" },
+        "detailsRef": { "$ref": "#/$defs/nullableRef" }
+      }
+    }
+  }
+}

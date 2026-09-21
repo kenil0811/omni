@@ -1,0 +1,123 @@
+apiVersion: alpha.platform/v0.1
+kind: AppManifest
+
+metadata:
+  name: work-queue-sync
+  displayName: Work Queue Sync
+  description: Create bounded tasks in an unfamiliar CRM API through a reviewed generic HTTP action.
+  labels:
+    fixture: generic-http-action
+
+spec:
+  compatibility:
+    sdk: ">=0.1 <0.2"
+
+  components:
+    - id: sync-worker
+      kind: handler-bundle
+      source: components/backend.tar.zst
+      dependencyLock: components/backend.lock.json
+
+  entrypoints:
+    - id: create-crm-tasks
+      kind: job
+      componentRef: sync-worker
+      handler: handlers.create_crm_tasks
+      inputSchema: schemas/create-tasks-input.schema.json
+      outputSchema: schemas/create-tasks-output.schema.json
+      invocation:
+        - manual
+      capabilities:
+        - crm-task-create
+      execution:
+        timeoutSeconds: 300
+        retry:
+          maxAttempts: 3
+          strategy: exponential
+          baseDelaySeconds: 5
+        concurrency:
+          mode: singleton
+        budgets:
+          modelCalls: 0
+          browserSeconds: 0
+          capabilityCalls: 20
+          costMicrousd: 500000
+      idempotency:
+        mode: caller-key
+        keyPointer: /requestId
+      outcome:
+        evaluatorRefs:
+          - task-create-fixture
+        humanReview: on-failure
+
+  connections:
+    - id: crm-api
+      connector: http.oauth2
+      onUnavailable: disable-dependent-capabilities
+      scopes:
+        - tasks.write
+      purpose: Authenticate to the approved CRM API without exposing its token to App code.
+
+  capabilities:
+    - id: crm-task-create
+      capability: http.request
+      connectionRef: crm-api
+      purpose: Create one bounded task in the configured CRM project.
+      constraints:
+        scheme: https
+        host: api.example-crm.com
+        port: 443
+        pathTemplate: /v1/projects/{projectId}/tasks
+        queryParameterNames: []
+        method: POST
+        redirectPolicy: deny
+        requestSchema: schemas/crm-task-request.schema.json
+        responseSchema: schemas/crm-task-response.schema.json
+        requestMediaTypes:
+          - application/json
+        forbiddenBodyPointers:
+          - /isAdmin
+          - /permissions
+          - /role
+        responseMediaTypes:
+          - application/json
+        materialFacts:
+          - id: project-id
+            role: target
+            source: path-parameter
+            selector: projectId
+          - id: assignee-id
+            role: target
+            source: body
+            selector: /assigneeId
+          - id: task-title
+            role: effect
+            source: body
+            selector: /title
+        deliverySafety:
+          mode: idempotency-header
+          headerName: idempotency-key
+          providerRetentionSeconds: 2592000
+        limits:
+          maxCallsPerRun: 20
+          maxCallsPerHour: 100
+          maxCallsPerDay: 500
+          maxItemsPerCall: 1
+          maxItemsPerDay: 500
+          requestBytes: 65536
+          responseBytes: 262144
+          timeoutSeconds: 30
+
+  policies:
+    approvalRequests:
+      - capabilityRef: crm-task-create
+        mode: first-use
+
+  tests:
+    - id: task-create-fixture
+      kind: fixture
+      requiredFor:
+        - preview
+        - release
+      fixture: tests/create-task.fixture.json
+      evaluator: evaluators.create_task_fixture

@@ -1,0 +1,200 @@
+fixtureVersion: alpha.platform/release-resolution-invalid-fixtures/v1
+description: JSON Patch mutations applied to ../examples/reference-release-resolution.json unless a case supplies another base.
+
+cases:
+  - id: deployment-binding-missing
+    patch:
+      - op: remove
+        path: /spec/deployment
+    expectedError: RR_SCHEMA_INVALID
+    phase: schema
+
+  - id: local-target-with-cloud-persistence
+    base: ../examples/reference-release-resolution-reconciliation.json
+    patch:
+      - op: replace
+        path: /spec/deployment/persistentStateLocation
+        value: cloud
+    expectedError: RR_SCHEMA_INVALID
+    phase: schema
+
+  - id: enabled-capability-without-grant
+    patch:
+      - op: replace
+        path: /spec/capabilityBindings/0/grant
+        value: null
+    expectedError: RR_SCHEMA_INVALID
+    phase: schema
+
+  - id: connected-connection-without-authorization-revision
+    patch:
+      - op: replace
+        path: /spec/connectionBindings/0/authorizationRevisionId
+        value: null
+    expectedError: RR_SCHEMA_INVALID
+    phase: schema
+
+  - id: active-release-unbounded-cost
+    patch:
+      - op: replace
+        path: /spec/entrypointBindings/0/effectiveExecution/budgets/costMicrousd
+        value: null
+    expectedError: RR_BUDGET_UNBOUNDED
+    phase: schema
+
+  - id: approval-below-registry-minimum
+    patch:
+      - op: replace
+        path: /spec/capabilityBindings/1/approval/mode
+        value: never
+    expectedError: RR_POLICY_WEAKENED
+    phase: semantic
+
+  - id: undeclared-capability-binding
+    patch:
+      - op: add
+        path: /spec/capabilityBindings/-
+        value:
+          capabilityRef: payment-send
+          capability: payment.send
+    expectedError: RR_REQUIREMENT_UNBOUND
+    phase: semantic
+
+  - id: entrypoint-adds-capability-outside-closure
+    patch:
+      - op: add
+        path: /spec/entrypointBindings/1/capabilityBindingRefs/-
+        value: notification-send
+    expectedError: RR_CLOSURE_EXPANDED
+    phase: semantic
+
+  - id: provider-interface-mismatch
+    patch:
+      - op: replace
+        path: /spec/serviceBindings/5/interface
+        value: platform.runner.javascript/v0.1
+    expectedError: RR_INTERFACE_INCOMPATIBLE
+    phase: semantic
+
+  - id: latest-compatible-context-carries-pinned-revision
+    base: ../examples/reference-release-resolution-outreach.json
+    patch:
+      - op: replace
+        path: /spec/contextBindings/0/pinnedRevisionId
+        value: ctxrev-company-guidelines-004
+    expectedError: RR_SCHEMA_INVALID
+    phase: schema
+
+  - id: runtime-overlay-expands-authority
+    mutation: Attempt to add a target that is absent from the Release baseline constraints.
+    expectedError: RR_POLICY_WEAKENED
+    phase: semantic
+
+  - id: raw-secret-leak
+    patch:
+      - op: add
+        path: /spec/connectionBindings/0/accessToken
+        value: secret-token-value
+    expectedError: RR_SCHEMA_INVALID
+    phase: schema
+
+  - id: enabled-schedule-missing-timezone
+    patch:
+      - op: replace
+        path: /spec/scheduleBindings/0/timezone
+        value: null
+    expectedError: RR_SCHEMA_INVALID
+    phase: schema
+
+  - id: failed-check-marked-ready
+    patch:
+      - op: replace
+        path: /spec/checks/0/status
+        value: fail
+    expectedError: RR_CHECK_FAILED
+    phase: semantic
+
+  - id: enabled-webhook-without-verification-profile
+    base: ../examples/reference-release-resolution-webhook.json
+    patch:
+      - op: replace
+        path: /spec/webhookBindings/0/verificationProfile
+        value: null
+    expectedError: RR_SCHEMA_INVALID
+    phase: schema
+
+  - id: enabled-webhook-without-endpoint-binding
+    base: ../examples/reference-release-resolution-webhook.json
+    patch:
+      - op: replace
+        path: /spec/webhookBindings/0/endpointBindingId
+        value: null
+    expectedError: RR_SCHEMA_INVALID
+    phase: schema
+
+  - id: webhook-verifier-definition-mismatch
+    base: ../examples/reference-release-resolution-webhook.json
+    patch:
+      - op: replace
+        path: /spec/webhookBindings/0/verificationProfile/verifierDefinitionDigest
+        value: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    expectedError: RR_INPUT_MISMATCH
+    phase: semantic
+
+  - id: webhook-endpoint-url-leak
+    base: ../examples/reference-release-resolution-webhook.json
+    patch:
+      - op: add
+        path: /spec/webhookBindings/0/endpointUrl
+        value: https://hooks.example.test/opaque-but-mutable
+    expectedError: RR_SCHEMA_INVALID
+    phase: schema
+
+  - id: webhook-normalization-binding-missing
+    base: ../examples/reference-release-resolution-webhook.json
+    patch:
+      - op: remove
+        path: /spec/webhookBindings/0/verificationProfile/normalization
+    expectedError: RR_SCHEMA_INVALID
+    phase: schema
+
+  - id: webhook-exactly-once-release-claim
+    base: ../examples/reference-release-resolution-webhook.json
+    patch:
+      - op: replace
+        path: /spec/webhookBindings/0/verificationProfile/deliverySemantics
+        value: exactly-once
+    expectedError: RR_SCHEMA_INVALID
+    phase: schema
+
+  - id: action-profile-bound-to-typed-capability
+    patch:
+      - op: replace
+        path: /spec/capabilityBindings/0/httpActionProfileBinding
+        value:
+          profileId: hap-wrong-capability
+          profileRevisionId: haprev-wrong-capability-001
+          profileDigest: sha256:6868686868686868686868686868686868686868686868686868686868686868
+          candidateDigest: sha256:6969696969696969696969696969696969696969696969696969696969696969
+          approvalDecisionId: apd-wrong-capability-001
+          connectionBindingRef: source-browser
+    expectedError: RR_REQUIREMENT_UNBOUND
+    phase: semantic
+
+  - id: action-profile-candidate-mismatch
+    base: ../examples/reference-release-resolution-http-action.json
+    patch:
+      - op: replace
+        path: /spec/capabilityBindings/0/httpActionProfileBinding/candidateDigest
+        value: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    expectedError: RR_INPUT_MISMATCH
+    phase: semantic
+
+  - id: first-use-generic-write-without-profile
+    base: ../examples/reference-release-resolution-http-action.json
+    patch:
+      - op: replace
+        path: /spec/capabilityBindings/0/httpActionProfileBinding
+        value: null
+    expectedError: RR_POLICY_WEAKENED
+    phase: semantic

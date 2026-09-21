@@ -1,0 +1,28 @@
+{
+  "apiVersion": "alpha.platform.capability/v0.1",
+  "kind": "CapabilityRequest",
+  "metadata": {
+    "callId": "call-email-send-0001",
+    "runId": "run-send-approved-0001",
+    "entrypointRef": "send-approved",
+    "sequence": 3
+  },
+  "authority": {
+    "releaseResolutionDigest": "sha256:7070707070707070707070707070707070707070707070707070707070707070",
+    "capabilityRef": "email-send",
+    "capability": "communication.email.send",
+    "definitionDigest": "sha256:5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e",
+    "authorityLeaseId": "lease-send-approved-0001"
+  },
+  "idempotency": {
+    "key": "approval-apr-send-0001:draft-draft-0042",
+    "scope": "app-capability-target"
+  },
+  "input": {
+    "draftId": "draft-0042",
+    "recipient": "buyer@example.com",
+    "subject": "Introduction",
+    "body": "Approved message content"
+  },
+  "executeBefore": "2026-09-16T12:05:00Z"
+}

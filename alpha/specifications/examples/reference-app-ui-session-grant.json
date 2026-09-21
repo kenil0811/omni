@@ -1,0 +1,82 @@
+{
+  "apiVersion": "alpha.platform.app-ui/v0.1",
+  "kind": "AppUiSessionGrant",
+  "metadata": {
+    "sessionId": "aui-session-monitor-001",
+    "issuedAt": "2026-09-17T15:00:00Z",
+    "expiresAt": "2026-09-17T15:15:00Z",
+    "nonce": "aui-nonce-001",
+    "revocationRef": "revocation-user-alpha-047"
+  },
+  "spec": {
+    "bridgeVersion": "0.1.0",
+    "userId": "user-alpha-owner",
+    "workspaceId": "wsp-alpha-demo",
+    "appId": "app-website-monitor",
+    "appVersionId": "aver-website-monitor-012",
+    "releaseId": "rel-website-monitor-production-009",
+    "environment": "production",
+    "surfaceId": "records",
+    "surfaceArtifactDigest": "sha256:1919191919191919191919191919191919191919191919191919191919191919",
+    "channelBinding": "sha256:abababababababababababababababababababababababababababababababab",
+    "appRole": "owner",
+    "methods": [
+      {
+        "method": "resource.read",
+        "requestSchemaDigest": "sha256:0101010101010101010101010101010101010101010101010101010101010101",
+        "responseSchemaDigest": "sha256:0202020202020202020202020202020202020202020202020202020202020202"
+      },
+      {
+        "method": "entrypoint.invoke",
+        "requestSchemaDigest": "sha256:0303030303030303030303030303030303030303030303030303030303030303",
+        "responseSchemaDigest": "sha256:0404040404040404040404040404040404040404040404040404040404040404"
+      },
+      {
+        "method": "operation.get",
+        "requestSchemaDigest": "sha256:0505050505050505050505050505050505050505050505050505050505050505",
+        "responseSchemaDigest": "sha256:0606060606060606060606060606060606060606060606060606060606060606"
+      },
+      {
+        "method": "artifact.request-upload",
+        "requestSchemaDigest": "sha256:0707070707070707070707070707070707070707070707070707070707070707",
+        "responseSchemaDigest": "sha256:0808080808080808080808080808080808080808080808080808080808080808"
+      },
+      {
+        "method": "shell.open",
+        "requestSchemaDigest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "responseSchemaDigest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      }
+    ],
+    "entrypoints": [
+      {
+        "entrypointRef": "search-records",
+        "kind": "query",
+        "inputSchemaDigest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+        "outputSchemaDigest": "sha256:3434343434343434343434343434343434343434343434343434343434343434",
+        "idempotencyMode": "none"
+      },
+      {
+        "entrypointRef": "refresh-records",
+        "kind": "job",
+        "inputSchemaDigest": "sha256:3131313131313131313131313131313131313131313131313131313131313131",
+        "outputSchemaDigest": "sha256:3232323232323232323232323232323232323232323232323232323232323232",
+        "idempotencyMode": "occurrence-key"
+      }
+    ],
+    "resources": [
+      {
+        "viewRef": "records-default",
+        "resourceRef": "monitored-records",
+        "kind": "table",
+        "operations": ["describe", "get", "query", "count", "aggregate"],
+        "fieldProjection": ["title", "sourceUrl", "firstSeenAt", "matchScore", "status"],
+        "pathPrefixes": [],
+        "classificationCeiling": "confidential",
+        "visibilityPolicyDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "operationSchemaDigest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      }
+    ],
+    "shellActions": ["activity", "access", "configure", "versions", "run", "record", "artifact", "approval", "connection", "builder"],
+    "eventTopics": ["operation", "run", "approval", "artifact", "app-health", "device"]
+  }
+}

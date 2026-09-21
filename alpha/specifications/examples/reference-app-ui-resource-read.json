@@ -1,0 +1,23 @@
+{
+  "apiVersion": "alpha.platform.app-ui/v0.1",
+  "kind": "AppUiRequest",
+  "requestId": "aui-request-query-001",
+  "sessionId": "aui-session-monitor-001",
+  "method": "resource.read",
+  "input": {
+    "viewRef": "records-default",
+    "resourceRef": "monitored-records",
+    "operation": "query",
+    "arguments": {
+      "projection": ["title", "sourceUrl", "firstSeenAt", "matchScore"],
+      "where": {
+        "matchScore": {"gte": 0.8}
+      },
+      "orderBy": [
+        {"field": "firstSeenAt", "direction": "desc"}
+      ],
+      "limit": 50,
+      "cursor": null
+    }
+  }
+}
