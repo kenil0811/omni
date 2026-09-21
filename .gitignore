@@ -1,0 +1,16 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# EXP-BUILDER writes a full generated App per run. Keep the results summary and
+# each run's result.json; the generated workspaces are reproducible bulk.
+docs/tasks/EXP-BUILDER/runs/*/*/app/
+
+# Desktop build outputs. The bundled CPython is reproducible from
+# app/packaging/macos/fetch_python.sh (pinned URL + upstream SHA-256).
+app/apps/desktop/src-tauri/target/
+app/apps/desktop/src-tauri/gen/
+app/apps/desktop/src-tauri/resources/python/

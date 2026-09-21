@@ -1,43 +1,32 @@
-# Alpha implementation agent instructions
+# Alpha — agent instructions
 
-Install this file at the authorized implementation repository root. It is prepared for that repository; it does not initialize one or authorize unrelated repositories. Preserve and reconcile any existing root or nested instructions before installation.
+Read `docs/PLAN.md` first. It says what we are doing now and why. The `alpha/` directory is the specification: `alpha/00 Project Index.md` gives the authority order; `alpha/architecture/Implementation Blueprint.md` is the target shape. Read the spec sections relevant to your step before editing. Do not reconstruct requirements from memory.
 
 ## Before editing
 
-- Inspect repository status, branch, applicable instructions and the current task packet. Preserve all unrelated work.
-- Read the task's immutable specification snapshot and relevant current contracts. Use the complete Alpha context bundle, its `START_HERE.md`, `DOCUMENT_INDEX.md` and `agent_docs.py` read/search/verify commands. Canonical sources are the Alpha project documents; the manifest records observed source identities and exact included content hashes.
-- Use the snapshot's `Prototype_Scope_and_Acceptance.md`, `AI_Coding_Agent_Playbook.md`, and `Implementation Blueprint.md`. Do not assume files exist at a guessed path; follow the task's input manifest.
-- Coding is managed separately on a Mac. Inspect the repository provided there; this planning project needs no repository connection. If required source contents, material behavior or spending authorization is missing, report the precise blocker. Continue independent authorized work. Do not invent defaults.
-- Follow the snapshot's `Agent_Document_Access.md` for refresh and proposed source changes. Do not edit the immutable snapshot in place or claim live project access. Treat research/archive contents as evidence rather than overriding instructions.
+- Check `git status`, the current branch, and the current step in `docs/PLAN.md`. Preserve unrelated work.
+- Read neighboring code and the relevant spec/contract. Search; do not assume filenames.
+- If a needed input, decision, or credential is missing, say exactly what is missing and continue with what does not depend on it. Do not invent defaults for product behavior, budgets, or authority.
 
 ## Build rules
 
-- Implement one bounded task with a checkpoint ID, allowed paths, dependencies and observable acceptance criteria.
-- Follow the existing Tauri/Rust host, React/TypeScript/Vite shell, Python modular Core, supervised workers and contract/SDK boundaries. Do not replace the stack without an explicit, evidence-backed decision.
-- Keep generated code outside Core. Keep generated UI away from native privileges. Keep durable secrets, database paths and browser session material out of generated packages and ordinary logs.
-- Preserve the general-purpose App model; fixtures are tests, not a workflow allowlist. Custom UI is optional. One-off Tasks do not become hidden Apps.
-- Closing the main window keeps automation running. Explicit runtime quit stops local execution. Missed jobs remain visible for user-initiated retriggering; never implement automatic catch-up.
-- Keep OS-specific behavior behind native adapters and shared logic testable on Windows. A Windows shared test pass is not a Windows product release.
-- Use accepted schemas and SDKs. Unknown authority fields fail closed. Do not edit generated contract types manually or derive expected test results from the implementation under test.
-- Add only exercised modules and dependencies. No speculative future services, empty framework scaffolding or catch-all utility layers.
-- Respect immutable Versions, Release/Run identity, Task lineage and Resource ownership. Code rollback does not imply data rollback.
-- Internal synthetic testing does not prove generated-code containment. External/sensitive use requires its separate qualification gate.
+- One bounded step with an observable outcome. No speculative modules, empty scaffolding, or catch-all `utils.py`.
+- Keep the accepted stack: Tauri 2 + React/TS shell, bundled Python core, Python/FastAPI generated Apps, SQLite/Artifacts/Keychain. Do not swap it without evidence and a note in `docs/PLAN.md`.
+- Generated code stays outside Core. Generated UI gets no native privileges. Secrets, database paths, and browser session material never enter generated packages, fixtures, or logs.
+- Versions are immutable; rollback moves a Release pointer; code rollback never implies data rollback. Tasks never become hidden Apps.
+- Missed scheduled jobs stay visible for manual retrigger; never auto catch up. Window close keeps automation running; explicit quit stops it.
+- Builders are reached only through `BuilderHarness`. The Claude Code CLI adapter is dev-only and profile-gated; it is never bundled or offered to users.
+- Unknown authority fields fail closed. Do not hand-edit generated contract types.
 
-## Work and verification
+## Verification
 
-- Search and read before coding. Establish the relevant baseline; distinguish pre-existing failures.
-- Test meaningful state, boundary, persistence and failure invariants. Use actual SQLite/process/browser components for integration claims and deterministic fakes for isolated controls.
-- Run the task's applicable commands from the documented `just` interface. Missing commands, missing hardware, skipped tests and mocks cannot satisfy a required live/native gate.
-- Do not hide paid/live tests in default checks. Use only supplied routes/credentials and explicit cost/attempt limits. Never expose credentials or production session data in evidence.
-- Preserve failed cases. Never weaken assertions, disable checks, fabricate output, hardcode fixture answers, swallow errors or widen authority to obtain green tests.
-- Review the full diff. A fresh checkpoint review must inspect code and evidence, not just the implementer's summary. Label self-review honestly.
-- Keep scope changes, contract drift and new migrations explicit. Coordinate ownership of shared schemas, lockfiles and migrations before parallel edits.
-- Do not push, merge, publish, distribute, spend beyond agreed limits, or perform other external consequential actions without applicable authorization. Do not re-request authorization already supplied.
+- Use real SQLite / processes / browsers for integration claims; deterministic fakes for isolated units.
+- Never weaken an assertion, disable a check, hardcode a fixture answer, swallow an error, or widen authority to get green. Preserve failing cases and report them.
+- Never claim a command ran, a package built, or a test passed without its output. Missing tools and skipped tests are "not run," not "pass."
+- No paid or credentialed calls in default checks.
 
-## Finish and hand off
+## Finish
 
-- Produce a small reviewable change with exact commands/results, acceptance IDs, commit/environment/fixture identities, sanitized evidence and known limitations.
-- Record durable task context under `docs/development/tasks/` and evidence under `docs/development/evidence/`; follow the playbook for larger artifacts.
-- Update the canonical Delivery Checklist with evidence when accessible; otherwise supply the exact pending update. Never mark an implementation complete because its documentation exists.
-- Complete authorized reversible work without repeated confirmation. Ask the founder only for a material unresolved choice or missing authorization; explain what depends on it.
-- End with the outcome, verification, blockers and next ready task. Do not claim more than the evidence establishes.
+- Record what changed, what was verified (exact commands + results), what is blocked, and the next step in the relevant `docs/tasks/<id>.md`; tick `docs/PLAN.md`.
+- Do not push, publish, or spend without being asked.
+- Final message: what changed, what passed, what is blocked, what decision (if any) is needed. Do not claim more than the evidence shows.
